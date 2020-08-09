@@ -22,6 +22,10 @@
 #ifndef CHIPMUNK_TYPES_H
 #define CHIPMUNK_TYPES_H
 
+// EGNX use float precision, so disable chipmunk double use.
+#define CP_USE_CGTYPES 0
+#define CP_USE_DOUBLES 0
+
 #include <stdint.h>
 #include <float.h>
 #include <math.h>
