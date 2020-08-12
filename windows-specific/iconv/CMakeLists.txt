@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.14)
 
-set(lib_name iconv)
+set(lib_name icon)
 set(target_name ext_${lib_name})
 
 project(${lib_name})
@@ -14,6 +14,6 @@ set_target_properties(${target_name} PROPERTIES
 )
 
 set_target_properties(${target_name} PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/libiconv.dll"
+  IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/iconv.dll"
   IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/libiconv.lib"
 )
