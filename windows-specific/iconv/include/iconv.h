@@ -1,4 +1,4 @@
-/* Copyright (C) 1999-2019 Free Software Foundation, Inc.
+/* Copyright (C) 1999-2003, 2005-2006, 2008-2011 Free Software Foundation, Inc.
    This file is part of the GNU LIBICONV Library.
 
    The GNU LIBICONV Library is free software; you can redistribute it
@@ -13,23 +13,23 @@
 
    You should have received a copy of the GNU Library General Public
    License along with the GNU LIBICONV Library; see the file COPYING.LIB.
-   If not, see <https://www.gnu.org/licenses/>.  */
+   If not, see <http://www.gnu.org/licenses/>.  */
 
 /* When installed, this file is called "iconv.h". */
 
 #ifndef _LIBICONV_H
 #define _LIBICONV_H
 
-#define _LIBICONV_VERSION 0x0110    /* version number: (major<<8) + minor */
+#define _LIBICONV_VERSION 0x010F    /* version number: (major<<8) + minor */
 
-#if HAVE_VISIBILITY && BUILDING_LIBICONV
-#define LIBICONV_DLL_EXPORTED __attribute__((__visibility__("default")))
-#elif defined _MSC_VER && BUILDING_LIBICONV
+#ifdef BUILDING_LIBICONV
 #define LIBICONV_DLL_EXPORTED __declspec(dllexport)
+#elif LIBICONV_DLL
+#define LIBICONV_DLL_EXPORTED __declspec(dllimport)
 #else
 #define LIBICONV_DLL_EXPORTED
 #endif
-extern LIBICONV_DLL_EXPORTED int _libiconv_version; /* Likewise */
+extern LIBICONV_DLL_EXPORTED int _libiconv_version;
 
 /* We would like to #include any system header file which could define
    iconv_t, 1. in order to eliminate the risk that the user gets compilation
@@ -63,46 +63,41 @@ typedef void* iconv_t;
    have EILSEQ in a different header.  On these systems, define EILSEQ
    ourselves. */
 #ifndef EILSEQ
-#define EILSEQ
+#define EILSEQ 
 #endif
 
-#ifndef ICONV_CONST
-#define ICONV_CONST const
-#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 
-/* Allocates descriptor for code conversion from encoding ‘fromcode’ to
-   encoding ‘tocode’. */
+/* Allocates descriptor for code conversion from encoding `fromcode' to
+   encoding `tocode'. */
 #ifndef LIBICONV_PLUG
 #define iconv_open libiconv_open
 #endif
 extern LIBICONV_DLL_EXPORTED iconv_t iconv_open (const char* tocode, const char* fromcode);
 
-/* Converts, using conversion descriptor ‘cd’, at most ‘*inbytesleft’ bytes
-   starting at ‘*inbuf’, writing at most ‘*outbytesleft’ bytes starting at
-   ‘*outbuf’.
-   Decrements ‘*inbytesleft’ and increments ‘*inbuf’ by the same amount.
-   Decrements ‘*outbytesleft’ and increments ‘*outbuf’ by the same amount. */
+/* Converts, using conversion descriptor `cd', at most `*inbytesleft' bytes
+   starting at `*inbuf', writing at most `*outbytesleft' bytes starting at
+   `*outbuf'.
+   Decrements `*inbytesleft' and increments `*inbuf' by the same amount.
+   Decrements `*outbytesleft' and increments `*outbuf' by the same amount. */
 #ifndef LIBICONV_PLUG
 #define iconv libiconv
 #endif
-extern LIBICONV_DLL_EXPORTED size_t iconv (iconv_t cd, ICONV_CONST char* * inbuf, size_t *inbytesleft, char* * outbuf, size_t *outbytesleft);
+extern LIBICONV_DLL_EXPORTED size_t iconv (iconv_t cd,  char* * inbuf, size_t *inbytesleft, char* * outbuf, size_t *outbytesleft);
 
-/* Frees resources allocated for conversion descriptor ‘cd’. */
+/* Frees resources allocated for conversion descriptor `cd'. */
 #ifndef LIBICONV_PLUG
 #define iconv_close libiconv_close
 #endif
 extern LIBICONV_DLL_EXPORTED int iconv_close (iconv_t cd);
 
-
 #ifdef __cplusplus
 }
 #endif
-
 
 #ifndef LIBICONV_PLUG
 
@@ -138,7 +133,7 @@ typedef struct {
    encoding ‘tocode’ into preallocated memory. Returns an error indicator
    (0 or -1 with errno set). */
 #define iconv_open_into libiconv_open_into
-extern LIBICONV_DLL_EXPORTED int iconv_open_into (const char* tocode, const char* fromcode,
+extern int iconv_open_into (const char* tocode, const char* fromcode,
                             iconv_allocation_t* resultp);
 
 /* Control of attributes. */
@@ -176,7 +171,7 @@ typedef void (*iconv_unicode_uc_to_mb_fallback)
                                          void* callback_arg),
               void* callback_arg,
               void* data);
-#if HAVE_WCHAR_T
+#if 0
 /* Fallback function.  Invoked when a number of bytes could not be converted to
    a wide character.  This function should process all bytes from inbuf and may
    produce replacement wide characters by calling the write_replacement
@@ -240,7 +235,8 @@ extern LIBICONV_DLL_EXPORTED const char * iconv_canonicalize (const char * name)
    prefixes should be directory names without trailing slash (i.e. use ""
    instead of "/").  */
 extern LIBICONV_DLL_EXPORTED void libiconv_set_relocation_prefix (const char *orig_prefix,
-                                            const char *curr_prefix);
+					    const char *curr_prefix);
+
 
 #ifdef __cplusplus
 }
