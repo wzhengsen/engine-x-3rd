@@ -72,7 +72,7 @@ if(CP_BUILD_DEMOS)
 endif()
 
 if(CP_BUILD_STATIC)
-set_target_properties(chipmunk_static
+set_target_properties(ext_chipmunk_static
         PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
         LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
