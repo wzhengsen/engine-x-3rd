@@ -31,10 +31,6 @@
 
 #ifdef _WIN32
 #  include <windows.h>
-/* FIXME:
-The wincrypt API is deprecated. New and existing software should start using Cryptography Next Generation APIs.
-Microsoft may remove this API in future releases.
-*/
 #  include <wincrypt.h>
 #else
 #  include <sys/stat.h>
@@ -68,7 +64,7 @@ uint8_t update_keys(uint32_t *pkeys, const z_crc_t *pcrc_32_tab, int32_t c)
     (*(pkeys+1)) += (*(pkeys+0)) & 0xff;
     (*(pkeys+1)) = (*(pkeys+1)) * 134775813L + 1;
     {
-        int32_t keyshift = (int32_t)((*(pkeys + 1)) >> 24);
+        register int32_t keyshift = (int32_t)((*(pkeys + 1)) >> 24);
         (*(pkeys+2)) = (uint32_t)CRC32((*(pkeys+2)), keyshift);
     }
     return c;
