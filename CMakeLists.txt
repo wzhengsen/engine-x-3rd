@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.14)
 project(external)
 
 if(NOT APPLE)
@@ -24,11 +24,14 @@ option(BUILD_EXT_POLY2TRI "Build with internal poly2tri support" ON)
 option(BUILD_EXT_MD5 "Build with internal md5 support" ON)
 option(BUILD_EXT_ZLIB "Build with internal zlib support" ON)
 option(BUILD_EXT_CURL "Build with internal curl support" ON)
-option(BUILD_EXT_UNZIP "Build with internal unzip support" ON)
+option(BUILD_EXT_MINIZIP "Build with internal minizip support" ON)
 option(BUILD_EXT_SPINE_CPP "Build with internal spine cpp runtime" ON)
 option(BUILD_EXT_ASTC "Build with internal ASTC support" ON)
 option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_DEFAULT})
 option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
+option(BUILD_EXT_WEBSOCKETS "Build with internal websockets support" ON)
+option(BUILD_EXT_XXTEA "Build with internal xxtea support" ON)
+
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
 
@@ -53,16 +56,16 @@ if(BUILD_EXT_CHIPMUNK)
     set(CP_BUILD_DEMOS OFF CACHE BOOL "Build chipmunk demos" FORCE)
     set(CP_INSTALL_STATIC OFF CACHE BOOL "Install chipmunk static" FORCE)
     add_subdirectory(chipmunk)
-    set_target_properties(chipmunk_static PROPERTIES
+    set_target_properties(ext_chipmunk_static PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/chipmunk/include"
     )
-    
+
     # !important engine-x not use double precision
-    target_compile_definitions(chipmunk_static PUBLIC CP_USE_CGTYPES=0)
-    target_compile_definitions(chipmunk_static PUBLIC CP_USE_DOUBLES=0)
+    target_compile_definitions(ext_chipmunk_static PUBLIC CP_USE_CGTYPES=0)
+    target_compile_definitions(ext_chipmunk_static PUBLIC CP_USE_DOUBLES=0)
 
     #~ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/chipmunk/include")
-    target_link_libraries(external chipmunk_static)
+    target_link_libraries(external ext_chipmunk_static)
 endif(BUILD_EXT_CHIPMUNK)
 if(BUILD_EXT_FREETYPE2)
     add_subdirectory(freetype2)
@@ -128,13 +131,25 @@ if(BUILD_EXT_ASTC)
     target_link_libraries(external ext_astc)
 endif(BUILD_EXT_ASTC)
 
+if(BUILD_EXT_WEBSOCKETS)
+    add_subdirectory(websockets)
+    add_subdirectory(uv)
+    target_link_libraries(external ext_websockets ext_uv)
+endif(BUILD_EXT_WEBSOCKETS)
+
+if(BUILD_EXT_XXTEA)
+    add_subdirectory(xxtea)
+    target_link_libraries(external ext_xxtea)
+endif(BUILD_EXT_XXTEA)
+
 # use lua/js specific libs by property to prevent conflict
 if(BUILD_LUA_LIBS)
-    add_subdirectory(lua/luajit)
-    add_subdirectory(lua/tolua)
-    add_subdirectory(lua/luasocket)
-    set_property(TARGET external APPEND PROPERTY 
-        CC_LUA_DEPEND ext_luajit ext_tolua ext_luasocket
+    add_subdirectory(lua)
+    add_subdirectory(tolua)
+    add_subdirectory(luasocket)
+    add_subdirectory(cjson)
+    set_property(TARGET external APPEND PROPERTY
+        CC_LUA_DEPEND ext_lua ext_tolua ext_luasocket ext_cjson
     )
 endif()
 
@@ -147,15 +162,15 @@ if(NOT LINUX)
         target_link_libraries(external ext_curl)
     endif(BUILD_EXT_CURL)
     add_subdirectory(png)
-    target_link_libraries(external 
+    target_link_libraries(external
         ext_png
     )
 endif(NOT LINUX)
 
 if(ANDROID)
     add_subdirectory(android-specific/cpufeatures)
-    target_link_libraries(external 
-        ext_cpufeatures 
+    target_link_libraries(external
+        ext_cpufeatures
     )
 endif()
 
@@ -171,9 +186,12 @@ endif()
 # The ogg decoder
 add_subdirectory(ogg)
 if(WINDOWS)
+    add_subdirectory(vlc)
     target_link_libraries(external
         ext_vorbis
         ext_vorbisfile
+        ext_libvlc
+        ext_libvlccore
     )
 else()
     if(ANDROID)
@@ -181,7 +199,7 @@ else()
         target_link_libraries(ext_vorbisfile INTERFACE ext_vorbis)
         target_link_libraries(external ext_vorbisfile)
     else()
-        target_link_libraries(external 
+        target_link_libraries(external
             ext_ogg
             ext_vorbis
             ext_vorbisfile
@@ -198,8 +216,8 @@ endif()
 # TODO: linux
 if(WINDOWS)
     add_subdirectory(glad)
-    add_subdirectory(win32-specific/iconv)
-    target_link_libraries(external 
+    add_subdirectory(windows-specific/iconv)
+    target_link_libraries(external
         ext_glad
         ext_iconv
     )
@@ -207,7 +225,7 @@ endif()
 
 if(WINDOWS OR MACOSX OR LINUX)
     add_subdirectory(glfw3)
-    target_link_libraries(external 
+    target_link_libraries(external
         ext_glfw3
     )
 endif()
@@ -215,24 +233,24 @@ endif()
 if(MACOSX OR ANDROID OR WINDOWS)
     if(BUILD_EXT_ZLIB)
         add_subdirectory(zlib)
-        target_link_libraries(external 
+        target_link_libraries(external
             ext_zlib
         )
     endif(BUILD_EXT_ZLIB)
 endif()
 
 # unzip depend on zlib
-if(BUILD_EXT_UNZIP)
-    add_subdirectory(unzip)
-    target_link_libraries(external ext_unzip)
-endif(BUILD_EXT_UNZIP)
+if(BUILD_EXT_MINIZIP)
+    add_subdirectory(minizip)
+    target_link_libraries(external ext_minizip)
+endif(BUILD_EXT_MINIZIP)
 
 # since 3.6/3.7 c runtime support build as DLL
 # since 3.8 cpp runtime is preferred for cocos2d-x
 if(BUILD_EXT_SPINE_CPP)
     add_subdirectory(spine-cpp)
-    target_link_libraries(external spine-cpp)
-    set_target_properties(spine-cpp
+    target_link_libraries(external ext_spine-cpp)
+    set_target_properties(ext_spine-cpp
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
@@ -261,7 +279,7 @@ set_target_properties(external
 
 if(MACOSX OR IOS)
     add_subdirectory(glsl-optimizer)
-    target_link_libraries(external 
+    target_link_libraries(external
     ext_glcpp_library
     ext_glsl_optimizer
     ext_libmesa

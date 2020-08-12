@@ -17,36 +17,64 @@ set_property(TARGET ${target_name} APPEND PROPERTY
 )
 
 if(WINDOWS)
-  set(BULLET_LIB_SUFFIX lib)
+  set_target_properties(${target_name} PROPERTIES
+  IMPORTED_LOCATION_DEBUG "${platform_spec_path}/debug/libLinearMath.lib"
+  IMPORTED_LOCATION_RELEASE "${platform_spec_path}/release/libLinearMath.lib"
+  )
+
+  # multi libs
+  add_library(bulletcollision STATIC IMPORTED)
+  set_target_properties(bulletcollision PROPERTIES
+  IMPORTED_LOCATION_DEBUG "${platform_spec_path}/debug/libBulletCollision.lib"
+  IMPORTED_LOCATION_RELEASE "${platform_spec_path}/release/libBulletCollision.lib"
+  )
+  add_library(bulletdynamics STATIC IMPORTED)
+  set_target_properties(bulletdynamics PROPERTIES
+  IMPORTED_LOCATION_DEBUG "${platform_spec_path}/debug/libBulletDynamics.lib"
+  IMPORTED_LOCATION_RELEASE "${platform_spec_path}/release/libBulletDynamics.lib"
+  )
+  add_library(bulletmultithreaded STATIC IMPORTED)
+  set_target_properties(bulletmultithreaded PROPERTIES
+  IMPORTED_LOCATION_DEBUG "${platform_spec_path}/debug/libBulletMultiThreaded.lib"
+  IMPORTED_LOCATION_RELEASE "${platform_spec_path}/release/libBulletMultiThreaded.lib"
+  )
+  add_library(minicl STATIC IMPORTED)
+  set_target_properties(minicl PROPERTIES
+  IMPORTED_LOCATION_DEBUG "${platform_spec_path}/debug/libMiniCL.lib"
+  IMPORTED_LOCATION_RELEASE "${platform_spec_path}/release/libMiniCL.lib"
+  )
+  add_library(linearmath STATIC IMPORTED)
+  set_target_properties(linearmath PROPERTIES
+  IMPORTED_LOCATION_DEBUG "${platform_spec_path}/debug/libLinearMath.lib"
+  IMPORTED_LOCATION_RELEASE "${platform_spec_path}/release/libLinearMath.lib"
+  )
 else()
-  set(BULLET_LIB_SUFFIX a)
+  set_target_properties(${target_name} PROPERTIES
+    IMPORTED_LOCATION "${platform_spec_path}/libLinearMath.a"
+  )
+
+  # multi libs
+  add_library(bulletcollision STATIC IMPORTED)
+  set_target_properties(bulletcollision PROPERTIES
+    IMPORTED_LOCATION "${platform_spec_path}/libBulletCollision.a"
+  )
+  add_library(bulletdynamics STATIC IMPORTED)
+  set_target_properties(bulletdynamics PROPERTIES
+    IMPORTED_LOCATION "${platform_spec_path}/libBulletDynamics.a"
+  )
+  add_library(bulletmultithreaded STATIC IMPORTED)
+  set_target_properties(bulletmultithreaded PROPERTIES
+    IMPORTED_LOCATION "${platform_spec_path}/libBulletMultiThreaded.a"
+  )
+  add_library(minicl STATIC IMPORTED)
+  set_target_properties(minicl PROPERTIES
+    IMPORTED_LOCATION "${platform_spec_path}/libMiniCL.a"
+  )
+  add_library(linearmath STATIC IMPORTED)
+  set_target_properties(linearmath PROPERTIES
+    IMPORTED_LOCATION "${platform_spec_path}/libLinearMath.a"
+  )
 endif()
-
-set_target_properties(${target_name} PROPERTIES
-  IMPORTED_LOCATION "${platform_spec_path}/libLinearMath.${BULLET_LIB_SUFFIX}"
-)
-
-# multi libs
-add_library(bulletcollision STATIC IMPORTED)
-set_target_properties(bulletcollision PROPERTIES
-  IMPORTED_LOCATION "${platform_spec_path}/libBulletCollision.${BULLET_LIB_SUFFIX}"
-)
-add_library(bulletdynamics STATIC IMPORTED)
-set_target_properties(bulletdynamics PROPERTIES
-  IMPORTED_LOCATION "${platform_spec_path}/libBulletDynamics.${BULLET_LIB_SUFFIX}"
-)
-add_library(bulletmultithreaded STATIC IMPORTED)
-set_target_properties(bulletmultithreaded PROPERTIES
-  IMPORTED_LOCATION "${platform_spec_path}/libBulletMultiThreaded.${BULLET_LIB_SUFFIX}"
-)
-add_library(minicl STATIC IMPORTED)
-set_target_properties(minicl PROPERTIES
-  IMPORTED_LOCATION "${platform_spec_path}/libMiniCL.${BULLET_LIB_SUFFIX}"
-)
-add_library(linearmath STATIC IMPORTED)
-set_target_properties(linearmath PROPERTIES
-  IMPORTED_LOCATION "${platform_spec_path}/libLinearMath.${BULLET_LIB_SUFFIX}"
-)
 
 # internal link depend
 set_property(TARGET bulletcollision APPEND PROPERTY INTERFACE_LINK_LIBRARIES "linearmath")

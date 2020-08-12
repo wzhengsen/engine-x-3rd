@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 
-set(lib_name unzip)
+set(lib_name minizip)
 set(target_name ext_${lib_name})
 
 project(${lib_name})
@@ -10,6 +10,7 @@ set(${target_name}_src
   ioapi.c
   ioapi_mem.c
   unzip.c
+  zip.c
 )
 
 add_library(${target_name} STATIC
@@ -24,10 +25,13 @@ if(MACOSX OR ANDROID OR WINDOWS)
 )
 endif()
 
+if(MSVC)
+target_compile_definitions(${target_name} PRIVATE _CRT_SECURE_NO_WARNINGS)
+endif()
+
 set_target_properties(${target_name}
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     FOLDER "External"
 )
-
