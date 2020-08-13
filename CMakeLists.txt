@@ -31,6 +31,10 @@ option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_D
 option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
 option(BUILD_EXT_WEBSOCKETS "Build with internal websockets support" ON)
 option(BUILD_EXT_XXTEA "Build with internal xxtea support" ON)
+option(BUILD_EXT_CRYPTOPP "Build with internal cryptopp support" ON)
+option(BUILD_EXT_PBC "Build with internal pbc support" ON)
+option(BUILD_EXT_MONGOOSE "Build with internal mongoose support" ON)
+
 
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
@@ -142,14 +146,31 @@ if(BUILD_EXT_XXTEA)
     target_link_libraries(external ext_xxtea)
 endif(BUILD_EXT_XXTEA)
 
+if(BUILD_EXT_CRYPTOPP)
+    add_subdirectory(cryptopp)
+    target_link_libraries(external ext_cryptopp)
+endif(BUILD_EXT_CRYPTOPP)
+
+if(BUILD_EXT_PBC)
+    add_subdirectory(pbc)
+    target_link_libraries(external ext_pbc)
+endif(BUILD_EXT_PBC)
+
+if(BUILD_EXT_MONGOOSE)
+    add_subdirectory(mongoose)
+    target_link_libraries(external ext_mongoose)
+endif(BUILD_EXT_MONGOOSE)
+
+
 # use lua/js specific libs by property to prevent conflict
 if(BUILD_LUA_LIBS)
     add_subdirectory(lua)
     add_subdirectory(tolua)
     add_subdirectory(luasocket)
     add_subdirectory(cjson)
+    add_subdirectory(lua-protobuf)
     set_property(TARGET external APPEND PROPERTY
-        CC_LUA_DEPEND ext_lua ext_tolua ext_luasocket ext_cjson
+        CC_LUA_DEPEND ext_lua ext_tolua ext_luasocket ext_cjson ext_lua-protobuf
     )
 endif()
 
@@ -192,6 +213,8 @@ if(WINDOWS)
         ext_vorbisfile
         ext_libvlc
         ext_libvlccore
+        ext_libeay32
+        ext_ssleay32
     )
 else()
     if(ANDROID)
