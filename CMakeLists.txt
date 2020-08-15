@@ -168,17 +168,27 @@ else()
 endif()
 
 # OpenAL streaming play family: openal & mpg123
-if(WINDOWS OR ANDROID OR LINUX)
-    add_subdirectory(openal)
-    add_subdirectory(mpg123)
-    target_link_libraries(external 
-        ext_openal
-        ext_mpg123
-    )
-elseif(APPLE AND CC_USE_ALSOFT_ON_APPLE) 
+if(CC_USE_ALSOFT)
     add_subdirectory(openal)
     target_link_libraries(external
         ext_openal
+    )
+elseif(CC_USE_MOJOAL)
+    add_subdirectory(sdl2)
+    add_subdirectory(mojoal)
+    target_include_directories(mojoal PRIVATE $<TARGET_PROPERTY:ext_SDL2,INTERFACE_INCLUDE_DIRECTORIES>)
+    if(ANDROID)
+        target_link_libraries(mojoal INTERFACE ext_SDL2)
+        target_link_libraries(external mojoal)
+    else()
+        target_link_libraries(external ext_SDL2 mojoal)
+    endif()
+endif()
+
+if(WINDOWS OR ANDROID OR LINUX)
+    add_subdirectory(mpg123)
+    target_link_libraries(external 
+        ext_mpg123
     )
 endif()
 
