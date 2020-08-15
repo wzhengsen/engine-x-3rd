@@ -1,6 +1,6 @@
 /*
- * Poly2Tri Copyright (c) 2009-2010, Poly2Tri Contributors
- * http://code.google.com/p/poly2tri/
+ * Poly2Tri Copyright (c) 2009-2018, Poly2Tri Contributors
+ * https://github.com/jhasse/poly2tri
  *
  * All rights reserved.
  *
@@ -28,11 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include <stdexcept>
 #include "sweep.h"
 #include "sweep_context.h"
 #include "advancing_front.h"
 #include "../common/utils.h"
+
+#include <cassert>
+#include <stdexcept>
 
 namespace p2t {
 
@@ -40,7 +42,7 @@ namespace p2t {
 void Sweep::Triangulate(SweepContext& tcx)
 {
   tcx.InitTriangulation();
-  tcx.CreateAdvancingFront(nodes_);
+  tcx.CreateAdvancingFront();
   // Sweep points; build mesh
   SweepPoints(tcx);
   // Clean up
@@ -49,12 +51,13 @@ void Sweep::Triangulate(SweepContext& tcx)
 
 void Sweep::SweepPoints(SweepContext& tcx)
 {
-    for (size_t i = 1; i < tcx.point_count(); i++) {
-        Point& point = *tcx.GetPoint(i);
-        Node* node = &PointEvent(tcx, point);
-        for (auto&& edge : point.edge_list)
-            EdgeEvent(tcx, edge, node);
+  for (size_t i = 1; i < tcx.point_count(); i++) {
+    Point& point = *tcx.GetPoint(i);
+    Node* node = &PointEvent(tcx, point);
+    for (unsigned int j = 0; j < point.edge_list.size(); j++) {
+      EdgeEvent(tcx, point.edge_list[j], node);
     }
+  }
 }
 
 void Sweep::FinalizationPolygon(SweepContext& tcx)
@@ -120,8 +123,7 @@ void Sweep::EdgeEvent(SweepContext& tcx, Point& ep, Point& eq, Triangle* triangl
       triangle = &triangle->NeighborAcross(point);
       EdgeEvent( tcx, ep, *p1, triangle, *p1 );
     } else {
-      std::runtime_error("EdgeEvent - collinear points not supported");
-      assert(0);
+      throw std::runtime_error("EdgeEvent - collinear points not supported");
     }
     return;
   }
@@ -137,8 +139,7 @@ void Sweep::EdgeEvent(SweepContext& tcx, Point& ep, Point& eq, Triangle* triangl
       triangle = &triangle->NeighborAcross(point);
       EdgeEvent( tcx, ep, *p2, triangle, *p2 );
     } else {
-      std::runtime_error("EdgeEvent - collinear points not supported");
-      assert(0);
+      throw std::runtime_error("EdgeEvent - collinear points not supported");
     }
     return;
   }
@@ -260,12 +261,12 @@ bool Sweep::LargeHole_DontFill(const Node* node) const {
   // Check additional points on front.
   const Node* next2Node = nextNode->next;
   // "..Plus.." because only want angles on same side as point being added.
-  if ((next2Node != NULL) && !AngleExceedsPlus90DegreesOrIsNegative(node->point, next2Node->point, prevNode->point))
+  if ((next2Node != nullptr) && !AngleExceedsPlus90DegreesOrIsNegative(node->point, next2Node->point, prevNode->point))
           return false;
 
   const Node* prev2Node = prevNode->prev;
   // "..Plus.." because only want angles on same side as point being added.
-  if ((prev2Node != NULL) && !AngleExceedsPlus90DegreesOrIsNegative(node->point, nextNode->point, prev2Node->point))
+  if ((prev2Node != nullptr) && !AngleExceedsPlus90DegreesOrIsNegative(node->point, nextNode->point, prev2Node->point))
           return false;
 
   return true;
