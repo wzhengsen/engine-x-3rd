@@ -63,7 +63,7 @@ typedef void* iconv_t;
    have EILSEQ in a different header.  On these systems, define EILSEQ
    ourselves. */
 #ifndef EILSEQ
-#define EILSEQ 
+#define EILSEQ
 #endif
 
 
@@ -129,8 +129,8 @@ typedef struct {
 #endif
 } iconv_allocation_t;
 
-/* Allocates descriptor for code conversion from encoding ‘fromcode’ to
-   encoding ‘tocode’ into preallocated memory. Returns an error indicator
+/* Allocates descriptor for code conversion from encoding 'fromcode' to
+   encoding 'tocode' into preallocated memory. Returns an error indicator
    (0 or -1 with errno set). */
 #define iconv_open_into libiconv_open_into
 extern int iconv_open_into (const char* tocode, const char* fromcode,
