@@ -34,7 +34,7 @@ PB_NS_BEGIN
 #include <assert.h>
 
 # define LUA_OK        0
-# define lua_rawlen    lua_objlen
+# define lua_rawlen    lua_rawlen
 # define luaL_setfuncs(L,l,n) (assert(n==0), luaL_register(L,NULL,l))
 # define luaL_setmetatable(L, name) \
     (luaL_getmetatable((L), (name)), lua_setmetatable(L, -2))

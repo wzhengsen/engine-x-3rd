@@ -55,7 +55,7 @@ void tolua_pushusertype_internal (lua_State* L, void* value, const char* type, i
 #if LUA_VERSION_NUM == 501
 			lua_pushvalue(L, TOLUA_NOPEER);             /* stack: mt newud peer */
 			lua_setfenv(L, -2);                         /* stack: mt newud */
-#elif LUA_VERSION_NUM == 503
+#elif LUA_VERSION_NUM >= 503
 			lua_pushvalue(L, TOLUA_NOPEER);             /* stack: mt newud peer */
 			lua_setuservalue(L, -2);                         /* stack: mt newud */
 #endif
