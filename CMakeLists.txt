@@ -159,7 +159,17 @@ if(ANDROID)
     )
 endif()
 
-# OpenAL streaming play family: ogg
+# The openal-soft(LGPL 2.1)
+message(STATUS "build with internal openal-soft support: ${BUILD_EXT_ALSOFT}")
+if(BUILD_EXT_ALSOFT)
+    add_subdirectory(openal)
+    target_link_libraries(external
+        ext_openal
+    )
+    add_definitions(-DCC_USE_ALSOFT=1)
+endif()
+
+# The ogg decoder
 add_subdirectory(ogg)
 if(WINDOWS)
     target_link_libraries(external
@@ -180,14 +190,10 @@ else()
     endif()
 endif()
 
-# OpenAL streaming play family: openal & mpg123
-message(STATUS "build with internal openal-soft support: ${BUILD_EXT_ALSOFT}")
-if(BUILD_EXT_ALSOFT)
-    add_subdirectory(openal)
-    target_link_libraries(external
-        ext_openal
-    )
-    add_definitions(-DCC_USE_ALSOFT=1)
+# The mpg123(LGPL 2.1) decoder, optional, if not present, use minimp3
+if(BUILD_EXT_MPG123 AND (NOT APPLE))
+    add_subdirectory(mpg123)
+    target_link_libraries(external ext_mpg123)
 endif()
 
 # TODO: linux
