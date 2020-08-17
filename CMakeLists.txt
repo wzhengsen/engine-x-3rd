@@ -160,7 +160,6 @@ if(ANDROID)
 endif()
 
 # The openal-soft(LGPL 2.1)
-message(STATUS "build with internal openal-soft support: ${BUILD_EXT_ALSOFT}")
 if(BUILD_EXT_ALSOFT)
     add_subdirectory(openal)
     target_link_libraries(external
