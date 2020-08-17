@@ -21,6 +21,7 @@ option(BUILD_EXT_CURL "Build with internal curl support" ON)
 option(BUILD_EXT_UNZIP "Build with internal unzip support" ON)
 option(BUILD_EXT_SPINE_CPP "Build with internal spine cpp runtime" ON)
 option(BUILD_EXT_ASTC "Build with internal ASTC support" ON)
+option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
 
@@ -186,10 +187,13 @@ elseif(CC_USE_MOJOAL)
 endif()
 
 if(WINDOWS OR ANDROID OR LINUX)
-    add_subdirectory(mpg123)
-    target_link_libraries(external 
-        ext_mpg123
-    )
+    if(BUILD_EXT_MPG123)
+        add_subdirectory(mpg123)
+        target_link_libraries(external 
+            ext_mpg123
+        )
+        target_compile_definitions(external PUBLIC CC_USE_MPG123=1)
+    endif()
 endif()
 
 # TODO: linux
