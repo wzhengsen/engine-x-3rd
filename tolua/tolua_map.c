@@ -296,7 +296,7 @@ static int tolua_bnd_getpeer(lua_State* L) {
     };
     return 1;
 };
-#elif LUA_VERSION_NUM == 503 /* lua 5.3 */
+#elif LUA_VERSION_NUM >= 503 /* lua 5.3 */
 static int tolua_bnd_setpeer(lua_State* L) {
 
 	/* stack: userdata, table */

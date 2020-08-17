@@ -33,7 +33,7 @@ static void storeatubox (lua_State* L, int lo)
     lua_insert(L, -3);
     lua_settable(L, -3); /* on lua 5.1, we trade the "tolua_peers" lookup for a settable call */
     lua_pop(L, 1);
-#elif LUA_VERSION_NUM == 503
+#elif LUA_VERSION_NUM >= 503
 	lua_getuservalue(L, lo);
 	if (lua_rawequal(L, -1, TOLUA_NOPEER)) {
 		lua_pop(L, 1);
@@ -193,7 +193,7 @@ static int class_index_event (lua_State* L)
             if (!lua_isnil(L, -1))
                 return 1;
         };
-#elif LUA_VERSION_NUM == 503
+#elif LUA_VERSION_NUM >= 503
 		lua_getuservalue(L, 1);
 		if (!lua_rawequal(L, -1, TOLUA_NOPEER)) {
 			lua_pushvalue(L, 2); /* key */
