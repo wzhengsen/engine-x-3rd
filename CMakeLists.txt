@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.6)
 project(external)
 
+if(NOT APPLE)
+    set(OPT_ALSOFT_DEFAULT ON)
+else()
+    set(OPT_ALSOFT_DEFAULT OFF) 
+endif()
+
 option(BUILD_EXT_BOX2D "Build with internal Box2D support" ON)
 option(BUILD_EXT_CHIPMUNK "Build with internal chipmunk support" ON)
 option(BUILD_EXT_FREETYPE2 "Build with internal freetype2 support" ON)
@@ -21,9 +27,15 @@ option(BUILD_EXT_CURL "Build with internal curl support" ON)
 option(BUILD_EXT_UNZIP "Build with internal unzip support" ON)
 option(BUILD_EXT_SPINE_CPP "Build with internal spine cpp runtime" ON)
 option(BUILD_EXT_ASTC "Build with internal ASTC support" ON)
+option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_DEFAULT})
 option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
+
+
+set(ANDROID_SHARED_LOADS "" CACHE INTERNAL "The android shared libraries load source code" )
+set(ANDROID_SHARED_LOAD_FILE_NAME "SharedLoader.java" CACHE INTERNAL "The android shared load java file name" )
+set(ANDROID_SHARED_LOAD_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ANDROID_SHARED_LOAD_FILE_NAME}.in" CACHE INTERNAL "The android shared libraries load config code file" )
 
 if(NOT BUILD_EXT_KCP)
     add_library(external empty.cpp)
@@ -169,31 +181,13 @@ else()
 endif()
 
 # OpenAL streaming play family: openal & mpg123
-if(CC_USE_ALSOFT)
+message(STATUS "build with internal openal-soft support: ${BUILD_EXT_ALSOFT}")
+if(BUILD_EXT_ALSOFT)
     add_subdirectory(openal)
     target_link_libraries(external
         ext_openal
     )
-elseif(CC_USE_MOJOAL)
-    add_subdirectory(sdl2)
-    add_subdirectory(mojoal)
-    target_include_directories(mojoal PRIVATE $<TARGET_PROPERTY:ext_SDL2,INTERFACE_INCLUDE_DIRECTORIES>)
-    if(ANDROID)
-        target_link_libraries(mojoal INTERFACE ext_SDL2)
-        target_link_libraries(external mojoal)
-    else()
-        target_link_libraries(external ext_SDL2 mojoal)
-    endif()
-endif()
-
-if(WINDOWS OR ANDROID OR LINUX)
-    if(BUILD_EXT_MPG123)
-        add_subdirectory(mpg123)
-        target_link_libraries(external 
-            ext_mpg123
-        )
-        target_compile_definitions(external PUBLIC CC_USE_MPG123=1)
-    endif()
+    add_definitions(-DCC_USE_ALSOFT=1)
 endif()
 
 # TODO: linux
@@ -267,4 +261,12 @@ if(MACOSX OR IOS)
     ext_glsl_optimizer
     ext_libmesa
     )
+endif()
+
+if (ANDROID)
+    function(config_android_shared_libs package_name target_folder)
+        string(REPLACE "." "/" package_path ${package_name})
+        set(ANDROID_PACKAGE_NAME ${package_name})
+        configure_file(${ANDROID_SHARED_LOAD_FILE_PATH} ${target_folder}/${package_path}/${ANDROID_SHARED_LOAD_FILE_NAME} @ONLY)
+    endfunction()
 endif()

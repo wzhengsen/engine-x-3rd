@@ -25,4 +25,5 @@ else()
 
     set(MPG123_SO_PATH "${platform_spec_path}/lib${lib_name}.so" CACHE INTERNAL "mpg123 Library location" )
     set(MPG123_SO_NAME "lib${lib_name}.so" CACHE INTERNAL "mpg123 Library name" )
+    set(ANDROID_SHARED_LOADS "${ANDROID_SHARED_LOADS}System.loadLibrary(\"mpg123\");" CACHE INTERNAL "Android Shared Loads" )
 endif()
