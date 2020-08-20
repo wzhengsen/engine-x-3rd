@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.14)
 
 project(ogg_libs)
 
@@ -6,7 +6,7 @@ include(../cmake/CocosExternalConfig.cmake)
 
 # -----macro: set ogg sub target-----
 macro(set_ogg_sub_target sub_lib_name)
-  
+
   set(sub_target_name ext_${sub_lib_name})
   if(WINDOWS)
     add_library(${sub_target_name} SHARED IMPORTED GLOBAL)
@@ -41,4 +41,3 @@ set_ogg_sub_target(${target_name})
 # -----sub target 2: vorbisfile-----
 set(target_name vorbisfile)
 set_ogg_sub_target(${target_name})
-

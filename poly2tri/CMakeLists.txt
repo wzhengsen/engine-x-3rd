@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.14)
 
 set(lib_name poly2tri)
 set(target_name ext_${lib_name})
@@ -25,4 +25,3 @@ set_target_properties(${target_name}
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     FOLDER "External"
 )
-
