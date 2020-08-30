@@ -43,10 +43,15 @@ public:
   _Elem* setnbuf(int len)
   {
     this->reserve(len);
+
 #if _MSC_VER > 1900 // VS2017 or later
     std::_Compressed_pair<_Alty, _Scary_val>* _Myval =
         (std::_Compressed_pair<_Alty, _Scary_val>*)this;
+#if _MSC_FULL_VER <= 192628619
     _Myval->_Get_second()._Mysize = len;
+#else
+    _Myval->_Myval2._Mysize = len;
+#endif
     auto front              = &this->front();
     front[len]              = '\0';
     return front;
