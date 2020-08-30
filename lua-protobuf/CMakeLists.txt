@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.12)
 
 set(lib_name lua-protobuf)
 set(target_name ext_${lib_name})
