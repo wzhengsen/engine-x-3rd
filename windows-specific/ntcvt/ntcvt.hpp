@@ -46,7 +46,7 @@ public:
 #if _MSC_VER > 1900 // VS2017 or later
     std::_Compressed_pair<_Alty, _Scary_val>* _Myval =
         (std::_Compressed_pair<_Alty, _Scary_val>*)this;
-    _Myval->_Myval2._Mysize = len;
+    _Myval->_Get_second()._Mysize = len;
     auto front              = &this->front();
     front[len]              = '\0';
     return front;
