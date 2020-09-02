@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.6)
 project(external)
 
 option(BUILD_EXT_BOX2D "Build with internal Box2D support" ON)
