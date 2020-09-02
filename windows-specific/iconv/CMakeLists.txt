@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.6)
 
 set(lib_name iconv)
 set(target_name ext_${lib_name})
