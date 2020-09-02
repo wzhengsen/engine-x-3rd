@@ -249,10 +249,10 @@ pbc_wmessage_string(struct pbc_wmessage *m, const char *key, const char * v, int
 		return -1;
 	}
 
-	bool varlen = false;
+	int varlen = 0;
 
 	if (len <=0) {
-		varlen = true;
+		varlen = 1;
 		// -1 for add '\0'
 		len = strlen(v) - len;
 	}

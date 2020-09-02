@@ -443,14 +443,14 @@ _pattern_unpack(lua_State* L) {
 	lua_checkstack(L, format_sz + 3);
 	int i;
 	char* ptr = temp;
-	bool array = false;
+	int array = 0;
 	for (i = 0; i < format_sz; i++) {
 		char type = format[i];
 		if (type >= 'a' && type <= 'z') {
 			ptr = (char*)_push_value(L, ptr, type);
 		}
 		else {
-			array = true;
+			array = 1;
 			int n = pbc_array_size((struct _pbc_array*)ptr);
 			lua_createtable(L, n, 0);
 			int j;
