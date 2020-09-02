@@ -27,9 +27,6 @@ add_library(${target_name} STATIC
   ${${target_name}_src}
 )
 
-file(GLOB_RECURSE CFILES "${CMAKE_SOURCE_DIR}/*.c")
-SET_SOURCE_FILES_PROPERTIES(${CFILES} PROPERTIES LANGUAGE CXX )
-
 target_include_directories(${target_name} PUBLIC .)
 target_link_libraries(${target_name} ext_lua)
 

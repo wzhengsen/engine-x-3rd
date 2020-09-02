@@ -31,7 +31,7 @@ set_default_v(void * output, int ctype, pbc_var defv) {
 		*(float *)output = (float)defv->real;
 		break;
 	case CTYPE_BOOL:
-		*(bool *)output = (defv->integer.low != 0);
+		*(int *)output = (defv->integer.low != 0);
 		break;
 	case CTYPE_INT8:
 		*(uint8_t *)output = (uint8_t)defv->integer.low;
@@ -115,7 +115,7 @@ write_longlong(int ctype, struct longlong *i, void *out) {
 		*(uint64_t *)out = (uint64_t)i->low | (uint64_t)i->hi << 32;
 		return 0;
 	case CTYPE_BOOL:
-		*(bool *)out = (i->low !=0) ;
+		*(int *)out = (i->low !=0) ;
 		return 0;
 	case CTYPE_INT8:
 		*(uint8_t *)out = (uint8_t)i->low;
@@ -468,7 +468,7 @@ _pack_number(int ptype , int ctype , struct pbc_slice *s, void *input) {
 			var->integer.hi = 0;
 			break;
 		case CTYPE_BOOL:
-			var->integer.low = *(bool *)input;
+			var->integer.low = *(int *)input;
 			var->integer.hi = 0;
 			break;
 		case CTYPE_DOUBLE:
@@ -731,7 +731,7 @@ _pack_packed(struct _pattern_field *pf , struct pbc_slice *s, pbc_array array) {
 	return ret;
 }
 
-static bool
+static int
 _is_default(struct _pattern_field * pf, void * in) {
 	switch (pf->ctype) {
 	case CTYPE_INT64: {
@@ -750,9 +750,9 @@ _is_default(struct _pattern_field * pf, void * in) {
 		return (uint8_t)(pf->defv->integer.low) == *(uint8_t *)in;
 	case CTYPE_BOOL:
 		if (pf->defv->integer.low)
-			return *(bool *)in == true;
+			return *(int *)in == 1;
 		else
-			return *(bool *)in == false;
+			return *(int *)in == 0;
 	}
 	if (pf->ptype == PTYPE_STRING) {
 		struct pbc_slice *slice = (struct pbc_slice *)in;
@@ -767,10 +767,10 @@ _is_default(struct _pattern_field * pf, void * in) {
 	} else if (pf->ptype == PTYPE_BYTES) {
 		struct pbc_slice *slice = (struct pbc_slice *)in;
 		if (slice->buffer == NULL)
-			return true;
+			return 1;
 	}
 
-	return false;
+	return 0;
 }
 
 int 
@@ -822,8 +822,8 @@ pbc_pattern_unpack(struct pbc_pattern *pat, struct pbc_slice *s, void * output) 
 	}
 
 	struct context * ctx = (struct context *)_ctx;
-	bool * field = (bool *)alloca(pat->count * sizeof(bool));
-	memset(field, 0, pat->count * sizeof(bool));
+	int * field = (int *)alloca(pat->count * sizeof(int));
+	memset(field, 0, pat->count * sizeof(int));
 
 	int i;
 	int fc = 0;
@@ -832,8 +832,8 @@ pbc_pattern_unpack(struct pbc_pattern *pat, struct pbc_slice *s, void * output) 
 		struct _pattern_field * f = bsearch_pattern(pat, ctx->a[i].wire_id >> 3);
 		if (f) {
 			int index = f - pat->f;
-			if (field[index] == false) {
-				field[index] = true;
+			if (field[index] == 0) {
+				field[index] = 1;
 				++fc;
 				if ((f->ctype == CTYPE_ARRAY || f->ctype == CTYPE_PACKED)) {
 					struct _pbc_array *array = (struct _pbc_array *)((char *)output + f->offset);
@@ -844,7 +844,7 @@ pbc_pattern_unpack(struct pbc_pattern *pat, struct pbc_slice *s, void * output) 
 			if (unpack_field(f->ctype , f->ptype , ctx->buffer , &ctx->a[i], out) < 0) {
 				int j;
 				for (j=0;j<pat->count;j++) {
-					if (field[j] == true && (pat->f[j].ctype == CTYPE_ARRAY || pat->f[j].ctype == CTYPE_PACKED)) {
+					if (field[j] == 1 && (pat->f[j].ctype == CTYPE_ARRAY || pat->f[j].ctype == CTYPE_PACKED)) {
 						void *array = (char *)output + pat->f[j].offset;
 						_pbcA_close((struct _pbc_array *)array);
 					}
@@ -858,7 +858,7 @@ pbc_pattern_unpack(struct pbc_pattern *pat, struct pbc_slice *s, void * output) 
 	_pbcC_close(_ctx);
 	if (fc != pat->count) {
 		for (i=0;i<pat->count;i++) {
-			if (field[i] == false) {
+			if (field[i] == 0) {
 				_pattern_set_default(&pat->f[i], (char *)output);
 			}
 		}
@@ -919,7 +919,7 @@ _ctype_size(const char *ctype) {
 	case 'D':
 		return sizeof(int64_t);
 	case 'b':
-		return sizeof(bool);
+		return sizeof(int);
 	case 'h':
 		return sizeof(int16_t);
 	case 'c':
