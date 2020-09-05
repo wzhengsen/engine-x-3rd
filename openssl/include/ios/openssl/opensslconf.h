@@ -36,9 +36,6 @@ extern "C" {
 #ifndef OPENSSL_RAND_SEED_OS
 # define OPENSSL_RAND_SEED_OS
 #endif
-#ifndef OPENSSL_NO_AFALGENG
-# define OPENSSL_NO_AFALGENG
-#endif
 #ifndef OPENSSL_NO_ASAN
 # define OPENSSL_NO_ASAN
 #endif
@@ -59,9 +56,6 @@ extern "C" {
 #endif
 #ifndef OPENSSL_NO_EGD
 # define OPENSSL_NO_EGD
-#endif
-#ifndef OPENSSL_NO_ENGINE
-# define OPENSSL_NO_ENGINE
 #endif
 #ifndef OPENSSL_NO_EXTERNAL_TESTS
 # define OPENSSL_NO_EXTERNAL_TESTS
@@ -197,7 +191,7 @@ extern "C" {
 # undef THIRTY_TWO_BIT
 #endif
 
-#define RC4_INT unsigned char
+#define RC4_INT unsigned int
 
 #ifdef  __cplusplus
 }
