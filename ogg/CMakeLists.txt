@@ -8,19 +8,29 @@ include(../cmake/CocosExternalConfig.cmake)
 macro(set_ogg_sub_target sub_lib_name)
 
   set(sub_target_name ext_${sub_lib_name})
-  if(WINDOWS)
+  if(WINDOWS OR LINUX)
     add_library(${sub_target_name} SHARED IMPORTED GLOBAL)
   else()
     add_library(${sub_target_name} STATIC IMPORTED GLOBAL)
   endif()
 
-  set_target_properties(${sub_target_name} PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  )
+  if(LINUX)
+    set_target_properties(${sub_target_name} PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include/linux"
+    )
+  else()
+    set_target_properties(${sub_target_name} PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    )
+  endif()
   if(WINDOWS)
     set_target_properties(${sub_target_name} PROPERTIES
       IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.dll"
       IMPORTED_IMPLIB "${platform_spec_path}/lib${sub_lib_name}.lib"
+    )
+  elseif(LINUX)
+    set_target_properties(${sub_target_name} PROPERTIES
+      IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.so"
     )
   else()
     set_target_properties(${sub_target_name} PROPERTIES
