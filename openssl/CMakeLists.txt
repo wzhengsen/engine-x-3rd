@@ -24,6 +24,10 @@ macro(set_openssl_sub_target sub_lib_name)
       IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}-1_1-x64.dll"
       IMPORTED_IMPLIB "${platform_spec_path}/lib${sub_lib_name}.lib"
     )
+  elseif(LINUX)
+    set_target_properties(${sub_target_name} PROPERTIES
+      IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.so"
+    )
   else()
     set_target_properties(${sub_target_name} PROPERTIES
       IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.a"
