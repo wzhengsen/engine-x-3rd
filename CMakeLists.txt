@@ -195,12 +195,9 @@ endif()
 # The ogg decoder
 add_subdirectory(ogg)
 if(WINDOWS)
-    add_subdirectory(vlc)
     target_link_libraries(external
         ext_vorbis
         ext_vorbisfile
-        ext_libvlc
-        ext_libvlccore
         ext_libeay32
         ext_ssleay32
     )
@@ -216,6 +213,14 @@ else()
             ext_vorbisfile
         )
     endif()
+endif()
+
+if(WINDOWS OR LINUX)
+    add_subdirectory(vlc)
+    target_link_libraries(external
+        ext_libvlc
+        ext_libvlccore
+    )
 endif()
 
 # The mpg123(LGPL 2.1) decoder, optional, if not present, use minimp3
