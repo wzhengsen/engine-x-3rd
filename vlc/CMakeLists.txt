@@ -13,12 +13,18 @@ macro(set_vlc_sub_target sub_lib_name)
   add_library(${sub_target_name} SHARED IMPORTED GLOBAL)
 
   set_target_properties(${sub_target_name} PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include/${platform_name}"
+    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include"
   )
-  set_target_properties(${sub_target_name} PROPERTIES
-    IMPORTED_LOCATION "${platform_spec_path}/${sub_lib_name}.dll"
-    IMPORTED_IMPLIB "${platform_spec_path}/${sub_lib_name}.lib"
-  )
+  if(WINDOWS)
+    set_target_properties(${sub_target_name} PROPERTIES
+      IMPORTED_LOCATION "${platform_spec_path}/${sub_lib_name}.dll"
+      IMPORTED_IMPLIB "${platform_spec_path}/${sub_lib_name}.lib"
+    )
+  elseif(LINUX)
+    set_target_properties(${sub_target_name} PROPERTIES
+      IMPORTED_LOCATION "${platform_spec_path}/${sub_lib_name}.so"
+    )
+  endif()
 endmacro()
 
 # -----sub target 1: libvlc-----
