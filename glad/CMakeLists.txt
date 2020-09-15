@@ -7,14 +7,13 @@ project(${lib_name})
 
 include(../cmake/CocosExternalConfig.cmake)
 
-add_library(${target_name} SHARED IMPORTED GLOBAL)
+add_library(${target_name} STATIC
+      ${${target_name}_src}
+      src/glad.c
+    )
 
-set_target_properties(${target_name} PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
+#~ set_target_properties(${target_name} PROPERTIES
+#~   INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_CURRENT_SOURCE_DIR}/include
+#~ )
 
-if (WINDOWS)
-    set_target_properties(${target_name} PROPERTIES
-      IMPORTED_LOCATION "${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/glad.dll"
-      IMPORTED_IMPLIB "${CMAKE_CURRENT_SOURCE_DIR}/prebuilt/glad.lib")
-endif()
+target_include_directories(${target_name} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
