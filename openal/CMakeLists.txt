@@ -28,5 +28,8 @@ elseif(ANDROID)
     )
     set(OPENAL_SO_PATH "${platform_spec_path}/lib${lib_name}.so" CACHE INTERNAL "OpenAL Library location" )
     set(OPENAL_SO_NAME "lib${lib_name}.so" CACHE INTERNAL "OpenAL Library name" )
-    set(ANDROID_SHARED_LOADS "${ANDROID_SHARED_LOADS}System.loadLibrary(\"openal\");" CACHE INTERNAL "Android Shared Loads" )
+elseif(LINUX)
+    set_target_properties(${target_name} PROPERTIES
+      IMPORTED_LOCATION "${platform_spec_path}/lib${lib_name}.so"
+    )
 endif()
