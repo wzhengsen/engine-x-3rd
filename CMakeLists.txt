@@ -4,7 +4,7 @@ project(external)
 if(NOT APPLE)
     set(OPT_ALSOFT_DEFAULT ON)
 else()
-    set(OPT_ALSOFT_DEFAULT OFF) 
+    set(OPT_ALSOFT_DEFAULT OFF)
 endif()
 
 option(BUILD_EXT_BOX2D "Build with internal Box2D support" ON)
@@ -216,8 +216,10 @@ else()
 endif()
 
 if(WINDOWS OR LINUX)
+    add_subdirectory(glad)
     add_subdirectory(vlc)
     target_link_libraries(external
+        ext_glad
         ext_libvlc
         ext_libvlccore
     )
@@ -231,10 +233,8 @@ endif()
 
 # TODO: linux
 if(WINDOWS)
-    add_subdirectory(glad)
     add_subdirectory(windows-specific/iconv)
     target_link_libraries(external
-        ext_glad
         ext_iconv
     )
 endif()
