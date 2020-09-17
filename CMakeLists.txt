@@ -162,7 +162,10 @@ if(BUILD_LUA_LIBS)
     )
 endif()
 
-if(NOT LINUX)
+if(LINUX)
+    add_subdirectory(libnotify)
+    target_link_libraries(external ext_libnotify)
+elseif()
     if(BUILD_EXT_CURL)
         add_subdirectory(curl)
         if(ANDROID)
@@ -174,7 +177,7 @@ if(NOT LINUX)
     target_link_libraries(external
         ext_png
     )
-endif(NOT LINUX)
+endif()
 
 if(ANDROID)
     add_subdirectory(android-specific/cpufeatures)
