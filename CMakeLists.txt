@@ -165,7 +165,7 @@ endif()
 if(LINUX)
     add_subdirectory(libnotify)
     target_link_libraries(external ext_libnotify)
-elseif()
+else()
     if(BUILD_EXT_CURL)
         add_subdirectory(curl)
         if(ANDROID)
@@ -221,10 +221,13 @@ endif()
 if(WINDOWS OR LINUX)
     add_subdirectory(glad)
     add_subdirectory(vlc)
+    add_subdirectory(cef)
     target_link_libraries(external
         ext_glad
         ext_libvlc
         ext_libvlccore
+        ext_libcef
+        ext_libcef_dll_wrapper
     )
 endif()
 
