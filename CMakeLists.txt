@@ -163,7 +163,7 @@ if(BUILD_LUA_LIBS)
 endif()
 
 if(LINUX)
-    add_subdirectory(libnotify)
+    add_subdirectory(linux-specific/libnotify)
     target_link_libraries(external ext_libnotify)
 else()
     if(BUILD_EXT_CURL)
