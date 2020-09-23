@@ -195,14 +195,14 @@ if(BUILD_EXT_MPG123 AND (NOT APPLE))
     target_link_libraries(external ext_mpg123)
 endif()
 
-# TODO: linux
-if(WINDOWS)
+if(WINDOWS OR LINUX)
     add_subdirectory(glad)
+    target_link_libraries(external ext_glad)
+endif()
+
+if(WINDOWS)
     add_subdirectory(win32-specific/iconv)
-    target_link_libraries(external 
-        ext_glad
-        ext_iconv
-    )
+    target_link_libraries(external ext_iconv)
 endif()
 
 if(WINDOWS OR MACOSX OR LINUX)
