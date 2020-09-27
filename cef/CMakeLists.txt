@@ -15,6 +15,11 @@ if(WINDOWS)
        IMPORTED_IMPLIB "${platform_spec_path}/libcef.lib"
     )
 elseif(LINUX)
+    execute_process(
+      COMMAND
+      ${PYTHON_COMMAND} ${CMAKE_CURRENT_SOURCE_DIR}/CefPreprocess.py
+    )
+
     set_target_properties(ext_libcef PROPERTIES
        IMPORTED_LOCATION "${platform_spec_path}/libcef.so"
     )
