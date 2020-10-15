@@ -24,6 +24,10 @@ macro(set_vlc_sub_target sub_lib_name)
     set_target_properties(${sub_target_name} PROPERTIES
       IMPORTED_LOCATION "${platform_spec_path}/${sub_lib_name}.so"
     )
+  elseif(MACOSX)
+    set_target_properties(${sub_target_name} PROPERTIES
+      IMPORTED_LOCATION "${platform_spec_path}/${sub_lib_name}.dylib"
+    )
   endif()
 endmacro()
 

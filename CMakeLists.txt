@@ -218,17 +218,21 @@ else()
     endif()
 endif()
 
-if(WINDOWS OR LINUX)
-    add_subdirectory(glad)
+if(WINDOWS OR LINUX OR MACOSX)
     add_subdirectory(vlc)
-    add_subdirectory(cef)
     target_link_libraries(external
-        ext_glad
         ext_libvlc
         ext_libvlccore
-        ext_libcef
-        ext_libcef_dll_wrapper
     )
+    if(WINDOWS OR LINUX)
+        add_subdirectory(glad)
+        add_subdirectory(cef)
+        target_link_libraries(external
+            ext_glad
+            ext_libcef
+            ext_libcef_dll_wrapper
+        )
+    endif()
 endif()
 
 # The mpg123(LGPL 2.1) decoder, optional, if not present, use minimp3
