@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.6)
 
 set(lib_name cpufeatures)
-set(target_name ext_${lib_name})
+set(target_name ${lib_name})
 
-project(lib_name)
+project(${lib_name})
 
 # CMake from android SDK set ANDROID_NDK instead of CMAKE_ANDROID_NDK
 if(ANDROID_NDK)

@@ -25,7 +25,6 @@ option(BUILD_EXT_MD5 "Build with internal md5 support" ON)
 option(BUILD_EXT_ZLIB "Build with internal zlib support" ON)
 option(BUILD_EXT_CURL "Build with internal curl support" ON)
 option(BUILD_EXT_UNZIP "Build with internal unzip support" ON)
-option(BUILD_EXT_SPINE_CPP "Build with internal spine cpp runtime" ON)
 option(BUILD_EXT_ASTC "Build with internal ASTC support" ON)
 option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_DEFAULT})
 option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
@@ -38,9 +37,9 @@ set(ANDROID_SHARED_LOAD_FILE_NAME "SharedLoader.java" CACHE INTERNAL "The androi
 set(ANDROID_SHARED_LOAD_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ANDROID_SHARED_LOAD_FILE_NAME}.in" CACHE INTERNAL "The android shared libraries load config code file" )
 
 if(NOT BUILD_EXT_KCP)
-    add_library(external empty.cpp)
+    add_library(external STATIC empty.cpp)
 else()
-    add_library(external kcp/kcp.c)
+    add_library(external STATIC kcp/kcp.c)
 endif()
 
 if(BUILD_EXT_BOX2D)
@@ -99,7 +98,7 @@ if(BUILD_EXT_PUGIXML)
 endif(BUILD_EXT_PUGIXML)
 if(BUILD_EXT_XXHASH)
     add_subdirectory(xxhash)
-    target_link_libraries(external ext_xxhash)
+    target_link_libraries(external xxhash)
 endif(BUILD_EXT_XXHASH)
 if(BUILD_EXT_CLIPPER)
     add_subdirectory(clipper)
@@ -120,21 +119,20 @@ endif(BUILD_EXT_POLY2TRI)
 
 if(BUILD_EXT_MD5)
     add_subdirectory(md5)
-    target_link_libraries(external ext_md5)
+    target_link_libraries(external md5)
 endif(BUILD_EXT_MD5)
 
 if(BUILD_EXT_ASTC)
     add_subdirectory(astc)
-    target_link_libraries(external ext_astc)
+    target_link_libraries(external astc)
 endif(BUILD_EXT_ASTC)
 
 # use lua/js specific libs by property to prevent conflict
 if(BUILD_LUA_LIBS)
     add_subdirectory(lua/luajit)
     add_subdirectory(lua/tolua)
-    add_subdirectory(lua/luasocket)
     set_property(TARGET external APPEND PROPERTY 
-        CC_LUA_DEPEND ext_luajit ext_tolua ext_luasocket
+        CC_LUA_DEPEND ext_luajit tolua
     )
 endif()
 
@@ -155,7 +153,7 @@ endif(NOT LINUX)
 if(ANDROID)
     add_subdirectory(android-specific/cpufeatures)
     target_link_libraries(external 
-        ext_cpufeatures 
+        cpufeatures 
     )
 endif()
 
@@ -197,7 +195,7 @@ endif()
 
 if(WINDOWS OR LINUX)
     add_subdirectory(glad)
-    target_link_libraries(external ext_glad)
+    target_link_libraries(external glad)
 endif()
 
 if(WINDOWS)
@@ -224,22 +222,22 @@ endif()
 # unzip depend on zlib
 if(BUILD_EXT_UNZIP)
     add_subdirectory(unzip)
-    target_link_libraries(external ext_unzip)
+    target_link_libraries(external unzip)
 endif(BUILD_EXT_UNZIP)
 
 # since 3.6/3.7 c runtime support build as DLL
 # since 3.8 cpp runtime is preferred for cocos2d-x
-if(BUILD_EXT_SPINE_CPP)
-    add_subdirectory(spine-cpp)
-    target_link_libraries(external spine-cpp)
-    set_target_properties(spine-cpp
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    FOLDER "External"
-)
-
-endif(BUILD_EXT_SPINE_CPP)
+# if(BUILD_EXT_SPINE_CPP)
+#     add_subdirectory(spine-cpp)
+#     target_link_libraries(external spine-cpp)
+#     set_target_properties(spine-cpp
+#     PROPERTIES
+#     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#     FOLDER "External"
+# )
+# 
+# endif(BUILD_EXT_SPINE_CPP)
 
 if(BUILD_EXT_CARES)
     set(CARES_STATIC ON CACHE BOOL "Build c-ares as static library" FORCE)
