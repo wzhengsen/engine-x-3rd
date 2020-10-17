@@ -247,6 +247,7 @@ if(BUILD_EXT_CARES)
     add_subdirectory(c-ares)
     target_link_libraries(external c-ares)
     include_directories($<TARGET_FILE_DIR:c-ares>)
+    include_directories("c-ares/include")
 endif(BUILD_EXT_CARES)
 
 # put "external" into External folder, too
