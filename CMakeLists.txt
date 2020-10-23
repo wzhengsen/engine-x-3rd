@@ -310,6 +310,20 @@ if(MACOSX OR IOS)
     ext_glsl_optimizer
     ext_libmesa
     )
+    if (IOS)
+        find_library(CORE_LOCATION_LIBRARY CoreLocation)
+        find_library(SYS_CONFIG_LIBRARY SystemConfiguration)
+        find_library(CORE_TELEPHONY_LIBRARY CoreTelephony)
+        find_library(AD_SUPPORT_LIBRARY AdSupport)
+        set(BMKDependFrameworks
+            ${CORE_LOCATION_LIBRARY}
+            ${SYS_CONFIG_LIBRARY}
+            ${CORE_TELEPHONY_LIBRARY}
+            ${AD_SUPPORT_LIBRARY}
+            ${COCOS2DX_ROOT_PATH}/external/BMKLocation/BMKLocationKit.framework
+        )
+        target_link_libraries(external ${BMKDependFrameworks})
+    endif()
 endif()
 
 if (ANDROID)
