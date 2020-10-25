@@ -794,10 +794,10 @@
 /*
 @@ max align type
 */
-#if !defined(__STDC_VERSION__) ||  __STDC_VERSION__ < 201112L
+#if defined(_MSC_VER)
 #define LUAI_USER_ALIGNMENT_T double
 #else
-#define LUAI_USER_ALIGNMENT_T max_align_t
+#define LUAI_USER_ALIGNMENT_T long double
 #endif
 
 
