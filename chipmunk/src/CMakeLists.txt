@@ -37,18 +37,18 @@ if(CP_BUILD_SHARED)
 endif(CP_BUILD_SHARED)
 
 if(CP_BUILD_STATIC)
-  add_library(chipmunk_static STATIC
+  add_library(chipmunk STATIC
     ${chipmunk_source_files}
   )
   # Tell MSVC to compile the code as C++.
   if(MSVC)
     set_source_files_properties(${chipmunk_source_files} PROPERTIES LANGUAGE CXX)
-    set_target_properties(chipmunk_static PROPERTIES LINKER_LANGUAGE CXX)
+    set_target_properties(chipmunk PROPERTIES LINKER_LANGUAGE CXX)
   endif(MSVC)
-  # Sets chipmunk_static to output "libchipmunk.a" not "libchipmunk_static.a"
-  set_target_properties(chipmunk_static PROPERTIES OUTPUT_NAME chipmunk)
+  # Sets chipmunk to output "libchipmunk.a" not "libchipmunk.a"
+  set_target_properties(chipmunk PROPERTIES OUTPUT_NAME chipmunk)
   if(CP_INSTALL_STATIC)
-    install(TARGETS chipmunk_static ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
+    install(TARGETS chipmunk ARCHIVE DESTINATION ${LIB_INSTALL_DIR})
   endif(CP_INSTALL_STATIC)
 endif(CP_BUILD_STATIC)
 
