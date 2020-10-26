@@ -27,7 +27,6 @@ option(BUILD_EXT_CURL "Build with internal curl support" ON)
 option(BUILD_EXT_UNZIP "Build with internal unzip support" ON)
 option(BUILD_EXT_ASTC "Build with internal ASTC support" ON)
 option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_DEFAULT})
-option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
 
@@ -185,12 +184,6 @@ else()
             ext_vorbisfile
         )
     endif()
-endif()
-
-# The mpg123(LGPL 2.1) decoder, optional, if not present, use minimp3
-if(BUILD_EXT_MPG123 AND (NOT APPLE))
-    add_subdirectory(mpg123)
-    target_link_libraries(external ext_mpg123)
 endif()
 
 if(WINDOWS OR LINUX)
