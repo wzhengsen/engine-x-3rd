@@ -49,24 +49,26 @@ set_target_properties(${target_name}
     FOLDER "External"
 )
 
-# tool:plainluac compiling bytecode
-set(target_name plainluac)
-add_executable(${target_name} ${LUA_CORE} ${LUA_SRC_PATH}/luac.c)
-if(${LUA_VERSION} VERSION_GREATER_EQUAL "5.4.0") # !important: traditional lua bindings solution tolua++ not support yet
-  target_compile_definitions(${target_name} PUBLIC LUA_COMPAT_APIINTCASTS=1)
-elseif(${LUA_VERSION} VERSION_GREATER_EQUAL "5.3.0")
-  target_compile_definitions(${target_name} 
-    PUBLIC LUA_COMPAT_5_1=1
-    PUBLIC LUA_COMPAT_5_2=1
-    )
-elseif(${LUA_VERSION} VERSION_GREATER_EQUAL "5.2.0")
-  target_compile_definitions(${target_name} PUBLIC LUA_COMPAT_ALL=1)
-endif()
+if(WIN32 OR MACOSX)
+  # tool:plainluac compiling bytecode
+  set(target_name plainluac)
+  add_executable(${target_name} ${LUA_CORE} ${LUA_SRC_PATH}/luac.c)
+  if(${LUA_VERSION} VERSION_GREATER_EQUAL "5.4.0") # !important: traditional lua bindings solution tolua++ not support yet
+    target_compile_definitions(${target_name} PUBLIC LUA_COMPAT_APIINTCASTS=1)
+  elseif(${LUA_VERSION} VERSION_GREATER_EQUAL "5.3.0")
+    target_compile_definitions(${target_name} 
+      PUBLIC LUA_COMPAT_5_1=1
+      PUBLIC LUA_COMPAT_5_2=1
+      )
+  elseif(${LUA_VERSION} VERSION_GREATER_EQUAL "5.2.0")
+    target_compile_definitions(${target_name} PUBLIC LUA_COMPAT_ALL=1)
+  endif()
 
-set_target_properties(${target_name}
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    FOLDER "Tools"
-)
+  set_target_properties(${target_name}
+      PROPERTIES
+      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+      FOLDER "Tools"
+  )
+endif()
