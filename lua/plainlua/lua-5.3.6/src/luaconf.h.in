@@ -786,10 +786,14 @@
 ** without modifying the main part of the file.
 */
 /*
-@@ Lua bytecode x86/x64 compatible
+@@ Whether lua bytecode compatible with x86/x64 apps
 */
-#define LUAC_COMPAT_FORMAT 1 // Compatible with x86/x64 apps
-#define LUAC_COMPAT_32BIT  0 // DNT compatible with official lua x86 apps
+#define LUAC_COMPAT_FORMAT 1
+
+/*
+@@ Whether lua bytecode compatible with official x86 apps
+*/
+// #define LUAC_COMPAT_32BIT 1
 
 /*
 @@ max align type
