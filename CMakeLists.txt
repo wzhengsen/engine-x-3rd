@@ -28,7 +28,6 @@ option(BUILD_EXT_MINIZIP "Build with internal minizip support" ON)
 option(BUILD_EXT_SPINE_CPP "Build with internal spine cpp runtime" ON)
 option(BUILD_EXT_ASTC "Build with internal ASTC support" ON)
 option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_DEFAULT})
-option(BUILD_EXT_MPG123 "Build with internal mpg123 support" OFF)
 option(BUILD_EXT_WEBSOCKETS "Build with internal websockets support" ON)
 option(BUILD_EXT_PBC "Build with internal pbc support" ON)
 option(BUILD_EXT_MONGOOSE "Build with internal mongoose support" ON)
@@ -43,9 +42,9 @@ set(ANDROID_SHARED_LOAD_FILE_NAME "SharedLoader.java" CACHE INTERNAL "The androi
 set(ANDROID_SHARED_LOAD_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ANDROID_SHARED_LOAD_FILE_NAME}.in" CACHE INTERNAL "The android shared libraries load config code file" )
 
 if(NOT BUILD_EXT_KCP)
-    add_library(external empty.cpp)
+    add_library(external STATIC empty.cpp)
 else()
-    add_library(external kcp/kcp.c)
+    add_library(external STATIC kcp/kcp.c)
 endif()
 
 if(BUILD_EXT_BOX2D)
@@ -58,16 +57,16 @@ if(BUILD_EXT_CHIPMUNK)
     set(CP_BUILD_DEMOS OFF CACHE BOOL "Build chipmunk demos" FORCE)
     set(CP_INSTALL_STATIC OFF CACHE BOOL "Install chipmunk static" FORCE)
     add_subdirectory(chipmunk)
-    set_target_properties(ext_chipmunk_static PROPERTIES
+    set_target_properties(chipmunk PROPERTIES
       INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/chipmunk/include"
     )
 
     # !important engine-x not use double precision
-    target_compile_definitions(ext_chipmunk_static PUBLIC CP_USE_CGTYPES=0)
-    target_compile_definitions(ext_chipmunk_static PUBLIC CP_USE_DOUBLES=0)
+    target_compile_definitions(chipmunk PUBLIC CP_USE_CGTYPES=0)
+    target_compile_definitions(chipmunk PUBLIC CP_USE_DOUBLES=0)
 
     #~ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/chipmunk/include")
-    target_link_libraries(external ext_chipmunk_static)
+    target_link_libraries(external chipmunk)
 endif(BUILD_EXT_CHIPMUNK)
 if(BUILD_EXT_FREETYPE2)
     add_subdirectory(freetype2)
@@ -75,7 +74,7 @@ if(BUILD_EXT_FREETYPE2)
 endif(BUILD_EXT_FREETYPE2)
 if(BUILD_EXT_RECAST)
     add_subdirectory(recast)
-    target_link_libraries(external ext_recast)
+    target_link_libraries(external recast)
 endif(BUILD_EXT_RECAST)
 if(BUILD_EXT_BULLET)
     add_subdirectory(bullet)
@@ -100,37 +99,37 @@ if(BUILD_EXT_WEBP)
 endif(BUILD_EXT_WEBP)
 if(BUILD_EXT_PUGIXML)
     add_subdirectory(pugixml)
-    target_link_libraries(external ext_pugixml)
+    target_link_libraries(external pugixml)
 endif(BUILD_EXT_PUGIXML)
 if(BUILD_EXT_XXHASH)
     add_subdirectory(xxhash)
-    target_link_libraries(external ext_xxhash)
+    target_link_libraries(external xxhash)
 endif(BUILD_EXT_XXHASH)
 if(BUILD_EXT_CLIPPER)
     add_subdirectory(clipper)
-    target_link_libraries(external ext_clipper)
+    target_link_libraries(external clipper)
 endif(BUILD_EXT_CLIPPER)
 if(BUILD_EXT_EDTAA3FUNC)
     add_subdirectory(edtaa3func)
-    target_link_libraries(external ext_edtaa3func)
+    target_link_libraries(external edtaa3func)
 endif(BUILD_EXT_EDTAA3FUNC)
 if(BUILD_EXT_CONVERTUTF)
     add_subdirectory(ConvertUTF)
-    target_link_libraries(external ext_convertUTF)
+    target_link_libraries(external convertUTF)
 endif(BUILD_EXT_CONVERTUTF)
 if(BUILD_EXT_POLY2TRI)
     add_subdirectory(poly2tri)
-    target_link_libraries(external ext_poly2tri)
+    target_link_libraries(external poly2tri)
 endif(BUILD_EXT_POLY2TRI)
 
 if(BUILD_EXT_MD5)
     add_subdirectory(md5)
-    target_link_libraries(external ext_md5)
+    target_link_libraries(external md5)
 endif(BUILD_EXT_MD5)
 
 if(BUILD_EXT_ASTC)
     add_subdirectory(astc)
-    target_link_libraries(external ext_astc)
+    target_link_libraries(external astc)
 endif(BUILD_EXT_ASTC)
 
 if(BUILD_EXT_WEBSOCKETS)
@@ -181,8 +180,8 @@ endif()
 
 if(ANDROID)
     add_subdirectory(android-specific/cpufeatures)
-    target_link_libraries(external
-        ext_cpufeatures
+    target_link_libraries(external 
+        cpufeatures 
     )
 endif()
 
@@ -231,13 +230,6 @@ if(WINDOWS OR LINUX)
     )
 endif()
 
-# The mpg123(LGPL 2.1) decoder, optional, if not present, use minimp3
-if(BUILD_EXT_MPG123 AND (NOT APPLE))
-    add_subdirectory(mpg123)
-    target_link_libraries(external ext_mpg123)
-endif()
-
-# TODO: linux
 if(WINDOWS)
     add_subdirectory(windows-specific/iconv)
     target_link_libraries(external
@@ -264,22 +256,22 @@ endif()
 # unzip depend on zlib
 if(BUILD_EXT_MINIZIP)
     add_subdirectory(minizip)
-    target_link_libraries(external ext_minizip)
+    target_link_libraries(external minizip)
 endif(BUILD_EXT_MINIZIP)
 
 # since 3.6/3.7 c runtime support build as DLL
 # since 3.8 cpp runtime is preferred for cocos2d-x
-if(BUILD_EXT_SPINE_CPP)
-    add_subdirectory(spine-cpp)
-    target_link_libraries(external ext_spine-cpp)
-    set_target_properties(ext_spine-cpp
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    FOLDER "External"
-)
-
-endif(BUILD_EXT_SPINE_CPP)
+# if(BUILD_EXT_SPINE_CPP)
+#     add_subdirectory(spine-cpp)
+#     target_link_libraries(external spine-cpp)
+#     set_target_properties(spine-cpp
+#     PROPERTIES
+#     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+#     FOLDER "External"
+# )
+# 
+# endif(BUILD_EXT_SPINE_CPP)
 
 if(BUILD_EXT_CARES)
     set(CARES_STATIC ON CACHE BOOL "Build c-ares as static library" FORCE)
@@ -289,6 +281,7 @@ if(BUILD_EXT_CARES)
     add_subdirectory(c-ares)
     target_link_libraries(external c-ares)
     include_directories($<TARGET_FILE_DIR:c-ares>)
+    include_directories("c-ares/include")
 endif(BUILD_EXT_CARES)
 
 # put "external" into External folder, too

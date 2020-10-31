@@ -243,8 +243,7 @@ YASIO__NS_INLINE namespace ip
 {
 #pragma pack(push, 1)
   // ip packet
-  struct ip_header
-  {
+  struct ip_header {
     // header size; 5+
     unsigned char header_length : 4;
 
@@ -252,11 +251,9 @@ YASIO__NS_INLINE namespace ip
     unsigned char version : 4;
 
     // type of service:
-    union
-    {
+    union {
       unsigned char value;
-      struct
-      {
+      struct {
         unsigned char priority : 3;
         unsigned char D : 1;        // delay: 0(normal), 1(as little as possible)
         unsigned char T : 1;        // throughput: 0(normal), 1(as big as possible)
@@ -292,11 +289,9 @@ YASIO__NS_INLINE namespace ip
     // check header of IP-PACKET 's correctness.
     unsigned short checksum;
 
-    typedef union
-    {
+    typedef union {
       unsigned int value;
-      struct
-      {
+      struct {
         unsigned int B1 : 8, B2 : 8, B3 : 8, B4 : 8;
       } detail;
     } dotted_decimal_t;
@@ -308,8 +303,7 @@ YASIO__NS_INLINE namespace ip
     dotted_decimal_t dst_ip;
   };
 
-  struct psd_header
-  {
+  struct psd_header {
     unsigned long src_addr;
     unsigned long dst_addr;
     char mbz;
@@ -317,8 +311,7 @@ YASIO__NS_INLINE namespace ip
     unsigned short tcp_length;
   };
 
-  struct tcp_header
-  {
+  struct tcp_header {
     unsigned short src_port; // lgtm [cpp/class-many-fields]
     unsigned short dst_port;
     unsigned int seqno;
@@ -331,16 +324,14 @@ YASIO__NS_INLINE namespace ip
     unsigned short urp;
   };
 
-  struct udp_header
-  {
+  struct udp_header {
     unsigned short src_port;
     unsigned short dst_port;
     unsigned short length;
     unsigned short checksum;
   };
 
-  struct icmp_header
-  {
+  struct icmp_header {
     unsigned char type;      // 8bit type
     unsigned char code;      // 8bit code
     unsigned short checksum; // 16bit check sum
@@ -348,15 +339,13 @@ YASIO__NS_INLINE namespace ip
     unsigned short seqno;    // message sequence NO.
   };
 
-  struct eth_header
-  {
+  struct eth_header {
     unsigned dst_eth[6];
     unsigned src_eth[6];
     unsigned eth_type;
   };
 
-  struct arp_header
-  {
+  struct arp_header {
     unsigned short arp_hw;    // format of hardware address
     unsigned short arp_pro;   // format of protocol address
     unsigned char arp_hlen;   // length of hardware address
@@ -368,8 +357,7 @@ YASIO__NS_INLINE namespace ip
     unsigned long arp_tpa;    // target protocol address;
   };
 
-  struct arp_packet
-  {
+  struct arp_packet {
     eth_header ethhdr;
     arp_header arphdr;
   };
@@ -384,8 +372,7 @@ YASIO__NS_INLINE namespace ip
   inline bool is_global_in4_addr(const in_addr* addr) { return !IN4_IS_ADDR_LOOPBACK(addr) && !IN4_IS_ADDR_LINKLOCAL(addr); };
   inline bool is_global_in6_addr(const in6_addr* addr) { return !!IN6_IS_ADDR_GLOBAL(addr); };
 
-  struct endpoint
-  {
+  struct endpoint {
   public:
     endpoint(void) { this->zeroset(); }
     endpoint(const endpoint& rhs) { this->as_is(rhs); }
@@ -418,7 +405,7 @@ YASIO__NS_INLINE namespace ip
           ::memcpy(&in6_, addr, sizeof(sockaddr_in6));
           this->len(sizeof(sockaddr_in6));
           break;
-#if YASIO__HAS_UDS
+#if defined(YASIO_ENABLE_UDS) && YASIO__HAS_UDS
         case AF_UNIX:
           as_un(((sockaddr_un*)addr)->sun_path);
           break;
@@ -483,7 +470,7 @@ YASIO__NS_INLINE namespace ip
       return *this;
     }
 
-#if YASIO__HAS_UDS
+#if defined(YASIO_ENABLE_UDS) && YASIO__HAS_UDS
     endpoint& as_un(const char* name)
     {
       int n = snprintf(un_.sun_path, sizeof(un_.sun_path) - 1, "%s", name);
@@ -557,7 +544,7 @@ YASIO__NS_INLINE namespace ip
           n = strlen(compat::inet_ntop(AF_INET6, &in6_.sin6_addr, &addr.front() + 1, static_cast<socklen_t>(addr.length() - 1)));
           n += sprintf(&addr.front() + n, "]:%u", this->port());
           break;
-#if YASIO__HAS_UDS
+#if defined(YASIO_ENABLE_UDS) && YASIO__HAS_UDS
         case AF_UNIX:
           n = this->len();
           addr.assign(un_.sun_path, n);
@@ -651,7 +638,7 @@ YASIO__NS_INLINE namespace ip
 
     void len(size_t n)
     {
-#if defined(__linux__) || defined(_WIN32)
+#if !YASIO__HAS_SA_LEN
       len_ = static_cast<uint8_t>(n);
 #else
       sa_.sa_len = static_cast<uint8_t>(n);
@@ -659,23 +646,22 @@ YASIO__NS_INLINE namespace ip
     }
     socklen_t len() const
     {
-#if defined(__linux__) || defined(_WIN32)
+#if !YASIO__HAS_SA_LEN
       return len_;
 #else
       return sa_.sa_len;
 #endif
     }
 
-    union
-    {
+    union {
       sockaddr sa_;
       sockaddr_in in4_;
       sockaddr_in6 in6_;
-#if YASIO__HAS_UDS
+#if defined(YASIO_ENABLE_UDS) && YASIO__HAS_UDS
       sockaddr_un un_;
 #endif
     };
-#if !defined(__APPLE__)
+#if !YASIO__HAS_SA_LEN
     uint8_t len_;
 #endif
   };
@@ -697,8 +683,7 @@ using namespace yasio::inet::ip;
 /*
 ** CLASS xxsocket: a posix socket wrapper
 */
-class xxsocket
-{
+class xxsocket {
 public: /// portable connect APIs
   // easy to connect a server ipv4 or ipv6 with local ip protocol version detect
   // for support ipv6 ONLY network.
@@ -970,6 +955,8 @@ public:
   YASIO__DECL static int set_keepalive(socket_native_type s, int flag, int idle, int interval, int probes);
 
   YASIO__DECL void reuse_address(bool reuse);
+
+  YASIO__DECL void exclusive_address(bool exclusive);
 
   /* @brief: Sets the socket option
   ** @params :
