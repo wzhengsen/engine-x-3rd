@@ -140,12 +140,12 @@ endif(BUILD_EXT_WEBSOCKETS)
 
 if(BUILD_EXT_PBC)
     add_subdirectory(pbc)
-    target_link_libraries(external ext_pbc)
+    target_link_libraries(external pbc)
 endif(BUILD_EXT_PBC)
 
 if(BUILD_EXT_MONGOOSE)
     add_subdirectory(mongoose)
-    target_link_libraries(external ext_mongoose)
+    target_link_libraries(external mongoose)
 endif(BUILD_EXT_MONGOOSE)
 
 
@@ -157,7 +157,7 @@ if(BUILD_LUA_LIBS)
     add_subdirectory(cjson)
     add_subdirectory(lua-protobuf)
     set_property(TARGET external APPEND PROPERTY
-        CC_LUA_DEPEND ext_lua ext_tolua ext_luasocket ext_cjson ext_lua-protobuf
+        CC_LUA_DEPEND lua tolua luasocket cjson lua-protobuf
     )
 endif()
 
@@ -180,8 +180,8 @@ endif()
 
 if(ANDROID)
     add_subdirectory(android-specific/cpufeatures)
-    target_link_libraries(external 
-        cpufeatures 
+    target_link_libraries(external
+        cpufeatures
     )
 endif()
 
@@ -222,7 +222,7 @@ if(WINDOWS OR LINUX)
     add_subdirectory(cef)
     add_subdirectory(vlc)
     target_link_libraries(external
-        ext_glad
+        glad
         ext_libcef
         ext_libcef_dll_wrapper
         ext_libvlc
@@ -270,7 +270,7 @@ endif(BUILD_EXT_MINIZIP)
 #     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 #     FOLDER "External"
 # )
-# 
+#
 # endif(BUILD_EXT_SPINE_CPP)
 
 if(BUILD_EXT_CARES)

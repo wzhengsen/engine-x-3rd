@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 set(lib_name pbc)
-set(target_name ext_${lib_name})
+set(target_name ${lib_name})
 
 project(${lib_name})
 enable_language(CXX)
@@ -28,7 +28,7 @@ add_library(${target_name} STATIC
 )
 
 target_include_directories(${target_name} PUBLIC .)
-target_link_libraries(${target_name} ext_lua)
+target_link_libraries(${target_name} lua)
 
 set_target_properties(${target_name}
     PROPERTIES

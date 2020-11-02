@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
 set(lib_name cjson)
-set(target_name ext_${lib_name})
+set(target_name ${lib_name})
 
 project(${lib_name})
 
@@ -19,7 +19,7 @@ target_include_directories(${target_name}
   PUBLIC .
   PRIVATE ../lua
 )
-target_link_libraries(${target_name} ext_lua)
+target_link_libraries(${target_name} lua)
 
 if(MSVC)
 target_compile_definitions(${target_name} PRIVATE _CRT_SECURE_NO_WARNINGS)
