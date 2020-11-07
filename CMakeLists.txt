@@ -30,10 +30,24 @@ option(BUILD_EXT_ALSOFT "Build with internal openal-soft support" ${OPT_ALSOFT_D
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
 
-
 set(ANDROID_SHARED_LOADS "" CACHE INTERNAL "The android shared libraries load source code" )
 set(ANDROID_SHARED_LOAD_FILE_NAME "SharedLoader.java" CACHE INTERNAL "The android shared load java file name" )
 set(ANDROID_SHARED_LOAD_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ANDROID_SHARED_LOAD_FILE_NAME}.in" CACHE INTERNAL "The android shared libraries load config code file" )
+
+if(NOT DEFINED LUA_ENGINE)
+    set(LUA_ENGINE "plainlua" CACHE INTERNAL "The lua core lib, luajit or plainlua")
+endif()
+
+if(LUA_ENGINE STREQUAL "plainlua")
+    if(NOT DEFINED LUA_VERSION)
+        set(LUA_VERSION "5.3.6" CACHE INTERNAL "The plainlua version")
+    endif()
+    message(STATUS "Using plainlua: ${LUA_VERSION}")
+elseif(LUA_ENGINE STREQUAL "luajit")
+    message(STATUS "Using luajit")
+else()
+    message(FATAL_ERROR "Invalid lua engine: ${LUA_ENGINE}, must be plainlua or luajit")
+endif()
 
 if(NOT BUILD_EXT_KCP)
     add_library(external STATIC empty.cpp)
