@@ -56,9 +56,17 @@ else()
 endif()
 
 if(BUILD_EXT_BOX2D)
-    add_subdirectory(Box2D)
-    target_link_libraries(external ext_box2d)
+    set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "Build the Box2D unit tests" FORCE)
+    set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "Build the Box2D testbed" FORCE)
+    add_subdirectory(box2d)
+    set_target_properties(box2d PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        FOLDER "External"
+    )
+    target_link_libraries(external box2d)
 endif(BUILD_EXT_BOX2D)
+
 if(BUILD_EXT_CHIPMUNK)
     set(CP_BUILD_SHARED OFF CACHE BOOL "Build chipmunk as shared library" FORCE)
     set(CP_BUILD_STATIC ON CACHE BOOL "Build chipmunk as static library" FORCE)
