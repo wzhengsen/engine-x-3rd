@@ -9,7 +9,7 @@ include(../cmake/CocosExternalConfig.cmake)
 
 add_library(${target_name} STATIC IMPORTED GLOBAL)
 
-if (WINDOWS)
+if (WINDOWS OR ANDROID OR LINUX)
 set_target_properties(${target_name} PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include/${platform_name}"
 )
