@@ -8,7 +8,7 @@ include(../cmake/CocosExternalConfig.cmake)
 
 set(${target_name}_src
     png.c
-	pngerror.c
+    pngerror.c
 	pngget.c
 	pngmem.c
 	pngpread.c
@@ -24,18 +24,18 @@ set(${target_name}_src
 	pngwutil.c
 )
 
-if(ANDROID OR IOS)
-    set(${target_name}_src ${${target_name}_src}
-        arm/arm_init.c
-        arm/filter_neon.S
-        arm/filter_neon_intrinsics.c
-        arm/palette_neon_intrinsics.c
-    )
-elseif(WIN32)
+if(WIN32)
     set(${target_name}_src ${${target_name}_src}
         intel/intel_init.c
         intel/filter_sse2_intrinsics.c
     )
+elseif(ANDROID OR IOS)
+        set(${target_name}_src ${${target_name}_src}
+            arm/arm_init.c
+            arm/filter_neon.S
+            arm/filter_neon_intrinsics.c
+            arm/palette_neon_intrinsics.c
+        )
 endif()
 
 add_library(${target_name} STATIC
@@ -47,7 +47,10 @@ target_include_directories(${target_name} PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
 # platform optimizing flags
 if(WIN32)
     target_compile_definitions(${target_name} PRIVATE PNG_INTEL_SSE_OPT=1)
-else(ANDROID OR IOS)
+elseif(IOS)
+    target_compile_definitions(${target_name} 
+        PRIVATE PNG_ARM_NEON_OPT=2)
+elseif(ANDROID)
     target_compile_definitions(${target_name} 
         PRIVATE PNG_ARM_NEON_OPT=2
         PRIVATE PNG_ARM_NEON_CHECK_SUPPORTED=1
