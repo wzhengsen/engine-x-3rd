@@ -1,9 +1,8 @@
 {
-    "freetype":"2.10.4",
+  "prebuilt_libs": {
+    "openssl":"1.1.1h",
     "curl":"7.73.0",
-    "jpeg":"9.0",
-    "png":"1.6.67",
-    "tiff":"4.0.3",
-    "webp":"0.2.1",
-    "openssl":"1.1.1h"
+    "freetype":"2.10.4",
+    "openal":"1.21.0"
+  }
 }
