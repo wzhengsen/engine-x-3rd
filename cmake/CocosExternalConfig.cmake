@@ -43,3 +43,6 @@ elseif(LINUX)
 endif()
 
 set(platform_spec_path "${_path_prefix}${platform_spec_path}")
+
+set(can_use_assembler TRUE)
+enable_language(ASM)
