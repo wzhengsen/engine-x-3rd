@@ -165,10 +165,6 @@ if(NOT LINUX)
         endif()
         target_link_libraries(external ext_curl)
     endif(BUILD_EXT_CURL)
-    add_subdirectory(png)
-    target_link_libraries(external 
-        ext_png
-    )
 endif(NOT LINUX)
 
 if(ANDROID)
@@ -226,12 +222,16 @@ if(WINDOWS OR MACOSX OR LINUX)
 endif()
 
 if(MACOSX OR ANDROID OR WINDOWS)
-    if(BUILD_EXT_ZLIB)
-        add_subdirectory(zlib)
-        target_link_libraries(external 
-            ext_zlib
-        )
-    endif(BUILD_EXT_ZLIB)
+    add_subdirectory(zlib)
+    target_link_libraries(external 
+        ext_zlib
+    )
+endif()
+
+if(NOT LINUX)
+    add_subdirectory(png)
+    target_include_directories(png PRIVATE "zlib/include")
+    target_link_libraries(external png)
 endif()
 
 # unzip depend on zlib
