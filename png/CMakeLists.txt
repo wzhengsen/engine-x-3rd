@@ -47,9 +47,6 @@ target_include_directories(${target_name} PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
 # platform optimizing flags
 if(WIN32)
     target_compile_definitions(${target_name} PRIVATE PNG_INTEL_SSE_OPT=1)
-elseif(IOS)
-    target_compile_definitions(${target_name} 
-        PRIVATE PNG_ARM_NEON_OPT=2)
 elseif(ANDROID)
     target_compile_definitions(${target_name} 
         PRIVATE PNG_ARM_NEON_OPT=2
