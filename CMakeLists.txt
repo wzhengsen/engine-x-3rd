@@ -34,6 +34,8 @@ set(ANDROID_SHARED_LOADS "" CACHE INTERNAL "The android shared libraries load so
 set(ANDROID_SHARED_LOAD_FILE_NAME "SharedLoader.java" CACHE INTERNAL "The android shared load java file name" )
 set(ANDROID_SHARED_LOAD_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ANDROID_SHARED_LOAD_FILE_NAME}.in" CACHE INTERNAL "The android shared libraries load config code file" )
 
+cmake_policy(SET CMP0079 NEW)
+
 if(NOT DEFINED LUA_ENGINE)
     set(LUA_ENGINE "plainlua" CACHE INTERNAL "The lua core lib, luajit or plainlua")
 endif()
@@ -231,6 +233,10 @@ endif()
 if(NOT LINUX)
     add_subdirectory(png)
     target_include_directories(png PRIVATE "zlib/include")
+    if(ANDROID)
+        # target_include_directories(png PRIVATE ${cpufeatures_include_dir})
+        target_link_libraries(png cpufeatures)
+    endif()
     target_link_libraries(external png)
 endif()
 

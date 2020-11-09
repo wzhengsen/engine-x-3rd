@@ -34,6 +34,7 @@ png_have_neon(png_structp png_ptr)
     * function calls may be slow!)
     */
    PNG_UNUSED(png_ptr)
-   return android_getCpuFamily() == ANDROID_CPU_FAMILY_ARM &&
-      (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0;
+   AndroidCpuFamily cpuFamily = android_getCpuFamily();
+   return cpuFamily == ANDROID_CPU_FAMILY_ARM64 || (cpuFamily == ANDROID_CPU_FAMILY_ARM &&
+      (android_getCpuFeatures() & ANDROID_CPU_ARM_FEATURE_NEON) != 0);
 }
