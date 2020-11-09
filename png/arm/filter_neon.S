@@ -16,7 +16,7 @@
 #define PNG_VERSION_INFO_ONLY
 #include "../pngpriv.h"
 
-#if defined(__arm__) && defined(__aarch64__)
+#if defined(__arm__)
 
 #if (defined(__linux__) || defined(__FreeBSD__)) && defined(__ELF__)
 .section .note.GNU-stack,"",%progbits /* mark stack as non-executable */
@@ -258,4 +258,4 @@ endfunc
 #endif /* PNG_ARM_NEON_IMPLEMENTATION == 2 (assembler) */
 #endif /* READ */
 
-#endif
+#endif /* armv7 32bit */
