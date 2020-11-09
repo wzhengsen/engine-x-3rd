@@ -163,6 +163,7 @@
              * versions do not work with the assembler so this may be
              * irrelevant, so just use the default (do nothing here.)
              */
+#pragma message("-------clang arm neon")
 #        elif defined(__GNUC__)
             /* GCC 4.5.4 NEON support is known to be broken.  4.6.3 is known to
              * work, so if this *is* GCC, or G++, look for a version >4.5

@@ -29,6 +29,7 @@ if(ANDROID OR IOS)
         arm/arm_init.c
         arm/filter_neon.S
         arm/filter_neon_intrinsics.c
+        arm/palette_neon_intrinsics.c
     )
 elseif(WIN32)
     set(${target_name}_src ${${target_name}_src}
@@ -41,15 +42,16 @@ add_library(${target_name} STATIC
   ${${target_name}_src}
 )
 
-set_target_properties(${target_name} PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}"
-)
+target_include_directories(${target_name} PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
 
 # platform optimizing flags
 if(WIN32)
-    target_compile_definitions(${target_name} PUBLIC PNG_INTEL_SSE_OPT=1)
+    target_compile_definitions(${target_name} PRIVATE PNG_INTEL_SSE_OPT=1)
 else(ANDROID OR IOS)
-    target_compile_definitions(${target_name} PUBLIC PNG_ARM_NEON_OPT=1)
+    target_compile_definitions(${target_name} 
+        PRIVATE PNG_ARM_NEON_OPT=2
+        PRIVATE PNG_ARM_NEON_CHECK_SUPPORTED=1
+    )
 endif()
 
 set_target_properties(${target_name}
