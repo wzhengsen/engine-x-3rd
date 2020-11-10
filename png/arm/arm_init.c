@@ -32,6 +32,7 @@
  * are a number of implementations in contrib/arm-neon, but the only one that
  * has partial support is contrib/arm-neon/linux.c - a generic Linux
  * implementation which reads /proc/cpufino.
+ * Notes: the png_have_neon implementation at linux.c works on armv7 but doesn't works on arm64 
  */
 #ifndef PNG_ARM_NEON_FILE
 #  if defined(__ANDROID__)
