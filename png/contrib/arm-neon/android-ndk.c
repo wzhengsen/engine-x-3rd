@@ -2,7 +2,7 @@
  *
  * Copyright (c) 2014 Glenn Randers-Pehrson
  * Written by John Bowler, 2014.
- * Last changed in libpng 1.6.10 [March 6, 2014]
+ * Last changed in libpng 1.6.38 [Nov 10, 2020]
  *
  * This code is released under the libpng license.
  * For conditions of distribution and use, see the disclaimer
@@ -32,6 +32,8 @@ png_have_neon(png_structp png_ptr)
    /* This is a whole lot easier than the linux code, however it is probably
     * implemented as below, therefore it is better to cache the result (these
     * function calls may be slow!)
+    * According to https://developer.android.com/ndk/guides/cpu-arm-neon, All
+    * ARM64 support neon
     */
    PNG_UNUSED(png_ptr)
    AndroidCpuFamily cpuFamily = android_getCpuFamily();
