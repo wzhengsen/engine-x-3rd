@@ -187,24 +187,7 @@ endif()
 
 # The ogg decoder
 add_subdirectory(ogg)
-if(WINDOWS)
-    target_link_libraries(external
-        ext_vorbis
-        ext_vorbisfile
-    )
-else()
-    if(ANDROID OR LINUX)
-        target_link_libraries(ext_vorbis INTERFACE ext_ogg)
-        target_link_libraries(ext_vorbisfile INTERFACE ext_vorbis)
-        target_link_libraries(external ext_vorbisfile)
-    else()
-        target_link_libraries(external 
-            ext_ogg
-            ext_vorbis
-            ext_vorbisfile
-        )
-    endif()
-endif()
+target_link_libraries(external ogg)
 
 if(WINDOWS OR LINUX)
     add_subdirectory(glad)
