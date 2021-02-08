@@ -1,53 +1,52 @@
 cmake_minimum_required(VERSION 3.6)
 
-project(ogg_libs)
+set(lib_name ogg)
+set(target_name ${lib_name})
+
+project(${target_name})
 
 include(../cmake/CocosExternalConfig.cmake)
 
-# -----macro: set ogg sub target-----
-macro(set_ogg_sub_target sub_lib_name)
+set(${target_name}_src
+  src/ogg/bitwise.c
+  src/ogg/framing.c
+  src/vorbis/analysis.c
+  src/vorbis/bitrate.c
+  src/vorbis/block.c
+  src/vorbis/codebook.c
+  src/vorbis/envelope.c
+  src/vorbis/floor0.c
+  src/vorbis/floor1.c
+  src/vorbis/info.c
+  src/vorbis/lookup.c
+  src/vorbis/lpc.c
+  src/vorbis/lsp.c
+  src/vorbis/mapping0.c
+  src/vorbis/mdct.c
+  src/vorbis/psy.c
+  src/vorbis/registry.c
+  src/vorbis/res0.c
+  src/vorbis/sharedbook.c
+  src/vorbis/smallft.c
+  src/vorbis/synthesis.c
+  src/vorbis/vorbisenc.c
+  src/vorbis/vorbisfile.c
+  src/vorbis/window.c
+)
 
-  set(sub_target_name ext_${sub_lib_name})
-  if(WINDOWS OR LINUX)
-    add_library(${sub_target_name} SHARED IMPORTED GLOBAL)
-  else()
-    add_library(${sub_target_name} STATIC IMPORTED GLOBAL)
-  endif()
+add_library(${target_name} STATIC
+  ${${target_name}_src}
+)
 
-  if(LINUX)
-    set_target_properties(${sub_target_name} PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include/linux"
-    )
-  else()
-    set_target_properties(${sub_target_name} PROPERTIES
-      INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    )
-  endif()
-  if(WINDOWS)
-    set_target_properties(${sub_target_name} PROPERTIES
-      IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.dll"
-      IMPORTED_IMPLIB "${platform_spec_path}/lib${sub_lib_name}.lib"
-    )
-  elseif(LINUX)
-    set_target_properties(${sub_target_name} PROPERTIES
-      IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.so"
-    )
-  else()
-    set_target_properties(${sub_target_name} PROPERTIES
-      IMPORTED_LOCATION "${platform_spec_path}/lib${sub_lib_name}.a"
-    )
-  endif()
-endmacro()
+target_include_directories(${target_name}
+  PUBLIC "${CMAKE_CURRENT_LIST_DIR}/include"
+  PRIVATE "${CMAKE_CURRENT_LIST_DIR}/src/vorbis"
+)
 
-if(NOT WINDOWS)
-    set(target_name ogg)
-    set_ogg_sub_target(${target_name})
-endif()
-
-# -----sub target 1: vorbis-----
-set(target_name vorbis)
-set_ogg_sub_target(${target_name})
-
-# -----sub target 2: vorbisfile-----
-set(target_name vorbisfile)
-set_ogg_sub_target(${target_name})
+set_target_properties(${target_name}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    FOLDER "External"
+)

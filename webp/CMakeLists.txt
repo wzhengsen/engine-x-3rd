@@ -1,23 +1,22 @@
 cmake_minimum_required(VERSION 3.6)
 
 set(lib_name webp)
-set(target_name ext_${lib_name})
+set(target_name ${lib_name})
 
 project(${lib_name})
-
 include(../cmake/CocosExternalConfig.cmake)
 
-add_library(${target_name} STATIC IMPORTED GLOBAL)
+FILE(GLOB_RECURSE ${target_name}_src *.h;*.c)
 
-set_target_properties(${target_name} PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_SOURCE_DIR}/include/${platform_name}"
+add_library(${target_name} STATIC
+  ${${target_name}_src}
 )
-if(WINDOWS)
-  set_target_properties(${target_name} PROPERTIES
-    IMPORTED_LOCATION "${platform_spec_path}/lib${lib_name}.lib"
-  )
-else()
-  set_target_properties(${target_name} PROPERTIES
-    IMPORTED_LOCATION "${platform_spec_path}/lib${lib_name}.a"
-  )
-endif()
+
+target_include_directories(${target_name} PUBLIC "${CMAKE_CURRENT_LIST_DIR}")
+
+set_target_properties(${target_name}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    FOLDER "External"
+)

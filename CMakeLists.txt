@@ -9,7 +9,7 @@ endif()
 
 option(BUILD_EXT_BOX2D "Build with internal Box2D support" ON)
 option(BUILD_EXT_CHIPMUNK "Build with internal chipmunk support" ON)
-option(BUILD_EXT_FREETYPE2 "Build with internal freetype2 support" ON)
+option(BUILD_EXT_FREETYPE "Build with internal freetype support" ON)
 option(BUILD_EXT_RECAST "Build with internal recast support" ON)
 option(BUILD_EXT_BULLET "Build with internal bullet support" ON)
 option(BUILD_EXT_JPEG "Build with internal jpeg support" ON)
@@ -36,10 +36,26 @@ option(BUILD_EXT_MONGOOSE "Build with internal mongoose support" ON)
 option(BUILD_EXT_CARES "Build with internal c-ares support" OFF)
 option(BUILD_EXT_KCP "Build with internal kcp support" OFF)
 
-
 set(ANDROID_SHARED_LOADS "" CACHE INTERNAL "The android shared libraries load source code" )
 set(ANDROID_SHARED_LOAD_FILE_NAME "SharedLoader.java" CACHE INTERNAL "The android shared load java file name" )
 set(ANDROID_SHARED_LOAD_FILE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${ANDROID_SHARED_LOAD_FILE_NAME}.in" CACHE INTERNAL "The android shared libraries load config code file" )
+
+# cmake_policy(SET CMP0079 NEW)
+
+if(NOT DEFINED LUA_ENGINE)
+    set(LUA_ENGINE "plainlua" CACHE INTERNAL "The lua core lib, luajit or plainlua")
+endif()
+
+if(LUA_ENGINE STREQUAL "plainlua")
+    if(NOT DEFINED LUA_VERSION)
+        set(LUA_VERSION "5.3.6" CACHE INTERNAL "The plainlua version")
+    endif()
+    message(STATUS "Using plainlua: ${LUA_VERSION}")
+elseif(LUA_ENGINE STREQUAL "luajit")
+    message(STATUS "Using luajit")
+else()
+    message(FATAL_ERROR "Invalid lua engine: ${LUA_ENGINE}, must be plainlua or luajit")
+endif()
 
 if(NOT BUILD_EXT_KCP)
     add_library(external STATIC empty.cpp)
@@ -48,9 +64,17 @@ else()
 endif()
 
 if(BUILD_EXT_BOX2D)
-    add_subdirectory(Box2D)
-    target_link_libraries(external ext_box2d)
+    set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "Build the Box2D unit tests" FORCE)
+    set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "Build the Box2D testbed" FORCE)
+    add_subdirectory(box2d)
+    set_target_properties(box2d PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+        FOLDER "External"
+    )
+    target_link_libraries(external box2d)
 endif(BUILD_EXT_BOX2D)
+
 if(BUILD_EXT_CHIPMUNK)
     set(CP_BUILD_SHARED OFF CACHE BOOL "Build chipmunk as shared library" FORCE)
     set(CP_BUILD_STATIC ON CACHE BOOL "Build chipmunk as static library" FORCE)
@@ -68,10 +92,10 @@ if(BUILD_EXT_CHIPMUNK)
     #~ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/chipmunk/include")
     target_link_libraries(external chipmunk)
 endif(BUILD_EXT_CHIPMUNK)
-if(BUILD_EXT_FREETYPE2)
-    add_subdirectory(freetype2)
+if(BUILD_EXT_FREETYPE)
+    add_subdirectory(freetype)
     target_link_libraries(external ext_freetype)
-endif(BUILD_EXT_FREETYPE2)
+endif(BUILD_EXT_FREETYPE)
 if(BUILD_EXT_RECAST)
     add_subdirectory(recast)
     target_link_libraries(external recast)
@@ -95,7 +119,7 @@ if(BUILD_EXT_OPENSSL)
 endif(BUILD_EXT_OPENSSL)
 if(BUILD_EXT_WEBP)
     add_subdirectory(webp)
-    target_link_libraries(external ext_webp)
+    target_link_libraries(external webp)
 endif(BUILD_EXT_WEBP)
 if(BUILD_EXT_PUGIXML)
     add_subdirectory(pugixml)
@@ -176,13 +200,13 @@ else()
     target_link_libraries(external
         ext_png
     )
-endif()
+endif(NOT LINUX)
 
 if(ANDROID)
     add_subdirectory(android-specific/cpufeatures)
-    target_link_libraries(external
-        cpufeatures
-    )
+    # target_link_libraries(external 
+    #     cpufeatures 
+    # )
 endif()
 
 # The openal-soft(LGPL 2.1)
@@ -196,26 +220,7 @@ endif()
 
 # The ogg decoder
 add_subdirectory(ogg)
-if(WINDOWS)
-    target_link_libraries(external
-        ext_vorbis
-        ext_vorbisfile
-        ext_libeay32
-        ext_ssleay32
-    )
-else()
-    if(ANDROID OR LINUX)
-        target_link_libraries(ext_vorbis INTERFACE ext_ogg)
-        target_link_libraries(ext_vorbisfile INTERFACE ext_vorbis)
-        target_link_libraries(external ext_vorbisfile)
-    else()
-        target_link_libraries(external
-            ext_ogg
-            ext_vorbis
-            ext_vorbisfile
-        )
-    endif()
-endif()
+target_link_libraries(external ogg)
 
 if(WINDOWS OR LINUX)
     add_subdirectory(glad)
@@ -245,12 +250,20 @@ if(WINDOWS OR MACOSX OR LINUX)
 endif()
 
 if(MACOSX OR ANDROID OR WINDOWS)
-    if(BUILD_EXT_ZLIB)
-        add_subdirectory(zlib)
-        target_link_libraries(external
-            ext_zlib
-        )
-    endif(BUILD_EXT_ZLIB)
+    add_subdirectory(zlib)
+    target_link_libraries(external 
+        ext_zlib
+    )
+endif()
+
+if(NOT LINUX)
+    add_subdirectory(png)
+    target_include_directories(png PRIVATE "zlib/include")
+    if(ANDROID)
+        target_include_directories(png PRIVATE ${cpufeatures_include_dir})
+        target_link_libraries(png INTERFACE cpufeatures)
+    endif()
+    target_link_libraries(external png)
 endif()
 
 # unzip depend on zlib
